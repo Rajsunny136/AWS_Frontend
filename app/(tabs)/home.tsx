@@ -24,8 +24,6 @@ import { jwtDecode } from "jwt-decode";
 import { RootStackParamList } from "..";
 import { userCookie } from "@/app/api-request/config";
 
-
-
 const Home = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -155,58 +153,52 @@ const Home = () => {
         <Ionicons name="chevron-down" size={24} color="black" />
       </View>
 
-      {/ Service Grid /}
-      <View style={styles.gridContainer}>
-        <TouchableOpacity
-          style={styles.gridItem}
-        >
-          <Text style={styles.gridText}>Trucks</Text>
-          <Image
-            style={styles.iconImage}
-            source={{
-              uri: "https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-small-cargo-truck-png-png-image_11574572.png",
-            }}
-          />
-        </TouchableOpacity>
+      
+    
+<View style={styles.gridContainer}>
+  <TouchableOpacity style={styles.gridItem}>
+    <Text style={styles.gridText}>Trucks</Text>
+    <Image
+      style={styles.iconImage}
+      source={{
+        uri: "https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-small-cargo-truck-png-png-image_11574572.png",
+      }}
+    />
+  </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-        >
-          <Text style={styles.gridText}>2 Wheeler</Text>
-          <Image
-            style={styles.iconImage}
-            source={{
-              uri: "https://5.imimg.com/data5/SELLER/Default/2022/5/HI/AK/ML/68853065/bajaj-pulsar-ns-160-motorcycles.png",
-            }}
-          />
-        </TouchableOpacity>
+  <TouchableOpacity style={styles.gridItem}>
+    <Text style={styles.gridText}>2 Wheeler</Text>
+    <Image
+      style={styles.iconImage}
+      source={{
+        uri: "https://5.imimg.com/data5/SELLER/Default/2022/5/HI/AK/ML/68853065/bajaj-pulsar-ns-160-motorcycles.png",
+      }}
+    />
+  </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-        >
-          <Text style={styles.gridText}>Packers & Movers</Text>
-          <Image
-            style={styles.iconImage}
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7BBh1H5DbdNOD2nrGmnQmFXL-qHf-Xo_rWA&s",
-            }}
-          />
-        </TouchableOpacity>
+  <TouchableOpacity style={styles.gridItem}>
+    <Text style={styles.gridText}>Packers & Movers</Text>
+    <Image
+      style={styles.iconImage}
+      source={{
+        uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7BBh1H5DbdNOD2nrGmnQmFXL-qHf-Xo_rWA&s",
+      }}
+    />
+  </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-        >
-          <Text style={styles.gridText}>All India Parcel</Text>
-          <Image
-            style={styles.iconImage}
-            source={{
-              uri: "https://images.unsplash.com/photo-1513054222571-9bcc38c2d6ed?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+  <TouchableOpacity style={styles.gridItem}>
+    <Text style={styles.gridText}>All India Parcel</Text>
+    <Image
+      style={styles.iconImage}
+      source={{
+        uri: "https://images.unsplash.com/photo-1513054222571-9bcc38c2d6ed?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      }}
+    />
+  </TouchableOpacity>
+</View>
 
-      {/ Announcements /}
+
+      {/* Announcements */}
       <View style={styles.announcementContainer}>
         <Text style={styles.announcementTitle}>Announcements</Text>
         <TouchableOpacity style={styles.announcementCard}>
@@ -217,13 +209,14 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
-      {/ Footer /}
+      {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>1 Years of ShipEase</Text>
       </View>
     </ScrollView>
   );
 };
+
 const { width, height } = Dimensions.get("window");
 const isSmallDevice = width < 375; // Example breakpoint for small devices
 
@@ -290,32 +283,32 @@ const styles = StyleSheet.create({
     fontSize: isSmallDevice ? 16 : 18,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   announcementCard: {
-    padding: 16,
-    backgroundColor: "#e0f7fa",
+    backgroundColor: "#f1f1f1",
     borderRadius: 10,
+    padding: isSmallDevice ? 12 : 16,
   },
   announcementText: {
-    fontSize: isSmallDevice ? 12 : 14,
+    fontSize: isSmallDevice ? 14 : 16,
     color: "#333",
   },
   viewAllText: {
-    fontSize: isSmallDevice ? 10 : 12,
-    color: "#007AFF",
-    marginTop: 4,
+    color: "#1e90ff",
+    marginTop: 8,
   },
   footer: {
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    paddingVertical: 16,
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f1f1f1",
+    marginTop: 24,
   },
   footerText: {
-    fontSize: isSmallDevice ? 12 : 14,
-    color: "#555",
+    fontSize: isSmallDevice ? 14 : 16,
+    color: "#666",
   },
 });
+
 export default Home;
