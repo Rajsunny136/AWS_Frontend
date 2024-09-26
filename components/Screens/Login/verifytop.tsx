@@ -114,15 +114,9 @@ const Verifyotp: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#d5d8dc" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>OTP Verification </Text>
-      </View>
       <View style={styles.otpContainer}>
         <StatusBar
-          backgroundColor="#37474F" // Same color as the header
+          backgroundColor="#A487E7" // Same color as the header
           barStyle="dark-content" // You can use 'light-content' if needed for white text/icons
         />
         <StatusBar barStyle="dark-content" />
@@ -192,7 +186,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
   },
   resendButton: {
-    backgroundColor: "#009688",
+    backgroundColor: "#e7b887",
     paddingVertical: normalize(15),
     borderRadius: normalize(5),
     width: "80%",
@@ -204,7 +198,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(16),
   },
   submitButton: {
-    backgroundColor: "#FFAB00",
+    backgroundColor: "#87a3e7",
     paddingVertical: normalize(15),
     borderRadius: normalize(5),
     width: "80%",
