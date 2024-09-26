@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
   },
   resendButton: {
-    backgroundColor: "#e7b887",
+    backgroundColor: "rgb(122, 115, 150)",
     paddingVertical: normalize(15),
     borderRadius: normalize(5),
     width: "80%",
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(16),
   },
   submitButton: {
-    backgroundColor: "#87a3e7",
+    backgroundColor: "#a487e7",
     paddingVertical: normalize(15),
     borderRadius: normalize(5),
     width: "80%",

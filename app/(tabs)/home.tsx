@@ -200,7 +200,7 @@ const Home = () => {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>1 Years of ShipEase</Text>
+        <Text style={styles.footerText}>1 Year of ShipEase</Text>
       </View>
     </ScrollView>
   );
