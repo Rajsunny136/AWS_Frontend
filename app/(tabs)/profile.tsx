@@ -184,8 +184,7 @@ const Profile = () => {
               </Card>
             </TouchableOpacity>
 
-            {/* Logout */}
-            <TouchableOpacity onPress={() => console.log("Logout")}>
+            <TouchableOpacity onPress={handleLogout}>
               <Card style={styles.card}>
                 <View style={styles.option}>
                   <Text style={styles.optionText}>Logout</Text>
