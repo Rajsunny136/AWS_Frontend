@@ -5,14 +5,15 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Alert,
+  ScrollView,
 } from "react-native";
 import CheckBox from "react-native-check-box";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/app";
 import { createUser } from "@/app/api-request/user_api"; // Import createUser function
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Import an icon library
 
 type EleMoveScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -32,7 +33,8 @@ interface FormData {
   email: string;
   gender: string;
   password: string;
-  phone: string;
+  phone: string; // Keep this for the API request
+  termsAccepted: boolean; // New field for terms acceptance
 }
 
 interface Errors {
@@ -41,10 +43,11 @@ interface Errors {
   email?: string;
   gender?: string;
   password?: string;
+  terms?: string; // New error field for terms acceptance
 }
 
 const Signup: React.FC<Props> = ({ route, navigation }) => {
-  const { phone } = route.params;
+  const { phone } = route.params; // Still keep this for API usage
 
   const [formData, setFormData] = useState<FormData>({
     firstname: "",
@@ -53,11 +56,13 @@ const Signup: React.FC<Props> = ({ route, navigation }) => {
     gender: "",
     password: "",
     phone: phone,
+    termsAccepted: false, // Initialize terms acceptance
   });
 
   const [errors, setErrors] = useState<Errors>({});
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false); // State for password visibility
 
-  const handleInputChange = (name: keyof FormData, value: string) => {
+  const handleInputChange = (name: keyof FormData, value: string | boolean) => {
     setFormData({ ...formData, [name]: value });
   };
 
@@ -70,128 +75,130 @@ const Signup: React.FC<Props> = ({ route, navigation }) => {
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.password || formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
+    if (!formData.termsAccepted) newErrors.terms = "You must accept the terms and conditions"; // Check terms acceptance
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async () => {
-   if (validate()) {
-     try {
-       const userResponse = await createUser(formData);
-       console.log("User response:", userResponse); // Log the user response
+  const handleSubmit = async () => {
+    if (validate()) {
+      try {
+        const userResponse = await createUser(formData);
+        console.log("User response:", userResponse); // Log the user response
 
-       if (
-         userResponse &&
-         userResponse.message === "User created successfully"
-       ) {
-         if (userResponse.data && userResponse.data.id) {
-           Alert.alert("Success", "Registration successful!", [
-             {
-               text: "OK",
-               onPress: () => {
-                 navigation.navigate("Login", {
-                   phone: formData.phone,
-                   user_id: userResponse.data.id,
-                 });
-               },
-             },
-           ]);
-         } else {
-           Alert.alert(
-             "Error",
-             "Failed to register user. Please try again later."
-           );
-         }
-       } else {
-         Alert.alert(
-           "Error",
-           userResponse.error ||
-             "Failed to register user. Please try again later."
-         );
-       }
-     } catch (error) {
-       console.error("Error in handleSubmit:", error);
-       Alert.alert("Error", "Failed to register user. Please try again later.");
-     }
-   }
- };
-
-
+        if (
+          userResponse &&
+          userResponse.message === "User created successfully"
+        ) {
+          if (userResponse.data && userResponse.data.id) {
+            Alert.alert("Success", "Registration successful!", [
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("Login", {
+                    phone: formData.phone,
+                    user_id: userResponse.data.id,
+                  });
+                },
+              },
+            ]);
+          } else {
+            Alert.alert(
+              "Error",
+              "Failed to register user. Please try again later."
+            );
+          }
+        } else {
+          Alert.alert(
+            "Error",
+            userResponse.error ||
+            "Failed to register user. Please try again later."
+          );
+        }
+      } catch (error) {
+        console.error("Error in handleSubmit:", error);
+        Alert.alert("Error", "Failed to register user. Please try again later.");
+      }
+    }
+  };
 
   return (
     <View style={styles.userContainer}>
-      <Text style={styles.userTitle}>EleMove</Text>
-      <View style={styles.userPhoneContainer}>
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png",
-          }}
-          style={styles.userFlag}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.label}>First Name</Text>
+        <TextInput
+          style={styles.userInput}
+          value={formData.firstname}
+          onChangeText={(value) => handleInputChange("firstname", value)}
         />
-        <Text style={styles.userPhoneNumber}>{phone}</Text>
-      </View>
-      <View style={styles.userRow}>
-        <View style={styles.userHalfInputContainer}>
-          <TextInput
-            style={styles.userInput}
-            placeholder="First Name"
-            value={formData.firstname}
-            onChangeText={(value) => handleInputChange("firstname", value)}
-          />
-          {errors.firstname && (
-            <Text style={styles.userError}>{errors.firstname}</Text>
-          )}
-        </View>
-        <View style={styles.userHalfInputContainer}>
-          <TextInput
-            style={styles.userInput}
-            placeholder="Last Name"
-            value={formData.lastname}
-            onChangeText={(value) => handleInputChange("lastname", value)}
-          />
-          {errors.lastname && (
-            <Text style={styles.userError}>{errors.lastname}</Text>
-          )}
-        </View>
-      </View>
-      <TextInput
-        style={styles.userInput}
-        placeholder="Email Id"
-        value={formData.email}
-        onChangeText={(value) => handleInputChange("email", value)}
-      />
-      {errors.email && <Text style={styles.userError}>{errors.email}</Text>}
+        {errors.firstname && <Text style={styles.userError}>{errors.firstname}</Text>}
 
-      <View style={styles.userGenderContainer}>
-        <Text>Gender:</Text>
-        <View style={styles.userCheckboxContainer}>
-          <CheckBox
-            isChecked={formData.gender === "M"}
-            onClick={() => handleInputChange("gender", "M")}
-          />
-          <Text style={styles.userGenderText}>Male</Text>
-        </View>
-        <View style={styles.userCheckboxContainer}>
-          <CheckBox
-            isChecked={formData.gender === "F"}
-            onClick={() => handleInputChange("gender", "F")}
-          />
-          <Text style={styles.userGenderText}>Female</Text>
-        </View>
-      </View>
-      {errors.gender && <Text style={styles.userError}>{errors.gender}</Text>}
+        <Text style={styles.label}>Last Name</Text>
+        <TextInput
+          style={styles.userInput}
+          value={formData.lastname}
+          onChangeText={(value) => handleInputChange("lastname", value)}
+        />
+        {errors.lastname && <Text style={styles.userError}>{errors.lastname}</Text>}
 
-      <TextInput
-        style={styles.userInput}
-        placeholder="Password"
-        value={formData.password}
-        secureTextEntry
-        onChangeText={(value) => handleInputChange("password", value)}
-      />
-      {errors.password && (
-        <Text style={styles.userError}>{errors.password}</Text>
-      )}
+        <Text style={styles.label}>Email ID</Text>
+        <TextInput
+          style={styles.userInput}
+          value={formData.email}
+          onChangeText={(value) => handleInputChange("email", value)}
+        />
+        {errors.email && <Text style={styles.userError}>{errors.email}</Text>}
+
+        <View style={styles.userGenderContainer}>
+          <Text>Gender:</Text>
+          <View style={styles.userCheckboxContainer}>
+            <CheckBox
+              isChecked={formData.gender === "M"}
+              onClick={() => handleInputChange("gender", "M")}
+            />
+            <Text style={styles.userGenderText}>Male</Text>
+          </View>
+          <View style={styles.userCheckboxContainer}>
+            <CheckBox
+              isChecked={formData.gender === "F"}
+              onClick={() => handleInputChange("gender", "F")}
+            />
+            <Text style={styles.userGenderText}>Female</Text>
+          </View>
+        </View>
+        {errors.gender && <Text style={styles.userError}>{errors.gender}</Text>}
+
+        <Text style={styles.label}>Password</Text>
+        <View style={styles.passwordContainer}>
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.userInput}
+              value={formData.password}
+              secureTextEntry={!passwordVisible}
+              onChangeText={(value) => handleInputChange("password", value)}
+            />
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            >
+              <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={24} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        {errors.password && (
+          <Text style={styles.userError}>{errors.password}</Text>
+        )}
+
+        <View style={styles.termsContainer}>
+          <CheckBox
+            isChecked={formData.termsAccepted}
+            onClick={() => handleInputChange("termsAccepted", !formData.termsAccepted)}
+          />
+          <Text style={styles.termsText}>I accept the Terms and Conditions</Text>
+        </View>
+        {errors.terms && <Text style={styles.userError}>{errors.terms}</Text>}
+      </ScrollView>
 
       <TouchableOpacity style={styles.userButton} onPress={handleSubmit}>
         <Text style={styles.userButtonText}>Register</Text>
@@ -202,47 +209,28 @@ const Signup: React.FC<Props> = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   userContainer: {
-    paddingTop: 50,
-    paddingBottom: 300,
+    flex: 1,
+    paddingTop:20,
     paddingLeft: 20,
     paddingRight: 20,
-    justifyContent: "center",
     backgroundColor: "#f8f9fa",
   },
-  userTitle: {
-    fontSize: 40,
+  scrollContainer: {
+    paddingBottom: 20, // Add some padding at the bottom for spacing
+    flexGrow: 1, // Allow the content to grow
+  },
+  label: {
+    fontSize: 14, // Reduced font size
+    marginBottom: 3, // Reduced margin
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "blue",
-  },
-  userPhoneContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  userFlag: {
-    width: 27,
-    height: 20,
-    marginRight: 10,
-  },
-  userPhoneNumber: {
-    fontSize: 18,
   },
   userInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: "darkgrey",
+    borderWidth: 1,
+    borderColor: "darkgrey",
+    borderRadius: 5,
     marginBottom: 10,
-    paddingVertical: 5,
-  },
-  userRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  userHalfInputContainer: {
-    flex: 1,
-    marginHorizontal: 5,
+    padding: 8, // Adjust padding to reduce height
+    height: 40, // Set a fixed height for uniformity
   },
   userGenderContainer: {
     flexDirection: "row",
@@ -257,11 +245,22 @@ const styles = StyleSheet.create({
   userGenderText: {
     marginLeft: 10,
   },
+  passwordContainer: {
+    marginBottom: 10,
+  },
+  passwordInputContainer: {
+    position: "relative",
+  },
+  iconContainer: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+  },
   userButton: {
-    backgroundColor: "#0000ff",
+    backgroundColor: "#A487E7",
     paddingVertical: 15,
-    marginTop: 20,
     borderRadius: 5,
+    margin: 20, // Add some margin for spacing
   },
   userButtonText: {
     color: "#fff",
@@ -271,6 +270,14 @@ const styles = StyleSheet.create({
   userError: {
     color: "red",
     marginBottom: 10,
+  },
+  termsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  termsText: {
+    marginLeft: 10,
   },
 });
 
