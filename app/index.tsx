@@ -9,10 +9,10 @@ import Signup from "@/components/Screens/Signup/signup";
 
 
 export type RootStackParamList = {
-    Tablayout: { user_id: any, phone: string};
+    Tablayout: { user_id: any, phone: string };
     Login: { phone: string; user_id: any };
-    Verifyotp: { phone: string; orderId: string  };
-    Signup:{ phone: string }
+    Verifyotp: { phone: string; orderId: string };
+    Signup: { phone: string }
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -21,15 +21,31 @@ const Index = () => {
 
     return (
         <>
-            <StatusBar barStyle="dark-content" backgroundColor="pink" />
+            <StatusBar
+                backgroundColor="#A487E7" // Same color as the header
+                barStyle="light-content" // White text/icons for dark background
+            />
             <NavigationContainer independent={true}>
-                <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+                <Stack.Navigator
+                    initialRouteName="Login"
+                    screenOptions={{
+                        headerStyle: { backgroundColor: "#A487E7" },
+                        headerTintColor: "white",
+                    }}
 
-                    <Stack.Screen name="Login" component={Login}/>
-                    <Stack.Screen name="Tablayout" component={TabLayout} options={{ headerShown: false }} />
-                    <Stack.Screen name="Verifyotp" component={Verifyotp}/>
-                    <Stack.Screen name="Signup" component={Signup}/>
-
+                >
+                    <Stack.Screen name="Login" component={Login} />
+                    <Stack.Screen
+                        name="Tablayout"
+                        component={TabLayout}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="Verifyotp"
+                        component={Verifyotp}
+                        options={{ headerShown: true }}
+                    />
+                    <Stack.Screen name="Signup" component={Signup} />
                 </Stack.Navigator>
             </NavigationContainer>
         </>

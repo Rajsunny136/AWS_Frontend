@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Text, Button, Card, TextInput } from "react-native-paper";
-import { getUserById,updateUserById} from "../api-request/user_api";
+import { getUserById, updateUserById } from "../api-request/user_api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userCookie } from "../api-request/config";
 import { jwtDecode } from "jwt-decode";
@@ -91,13 +91,16 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
+      console.log("Logout button pressed");
       await AsyncStorage.removeItem(userCookie); // Clear user token from AsyncStorage
       Alert.alert("Logged out", "You have been logged out successfully.");
       navigation.navigate("Login" as never); // Navigate to Login screen
     } catch (error) {
       console.error("Failed to log out:", error);
+      Alert.alert("Error", "Failed to log out. Please try again.");
     }
   };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -108,7 +111,6 @@ const Profile = () => {
 
   return (
     <>
-      
       <View style={styles.container}>
         {user && (
           <>
@@ -141,58 +143,59 @@ const Profile = () => {
               </Card.Content>
             </Card>
             <TouchableOpacity
-  onPress={() => {
-    /* Handle My Account Press */
-  }}
->
-  <Card style={styles.card}>
-    <TouchableOpacity
-      style={styles.option}
-      onPress={() => {
-        /* Handle My Account Press */
-      }}
-    >
-      <Text style={styles.optionText}>Addresses</Text>
-      <Ionicons name="chevron-forward" size={20} color="#000000" />
-    </TouchableOpacity>
-  </Card>
-  <Card style={styles.card}>
-    <TouchableOpacity
-      style={styles.option}
-      onPress={() => {
-        /* Handle My Account Press */
-      }}
-    >
-      <Text style={styles.optionText}>Help & Support</Text>
-      <Ionicons name="chevron-forward" size={20} color="#000000" />
-    </TouchableOpacity>
-  </Card>
+              onPress={() => {
+                /* Handle My Account Press */
+              }}
+            >
+              <Card style={styles.card}>
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    /* Handle My Account Press */
+                  }}
+                >
+                  <Text style={styles.optionText}>Addresses</Text>
+                  <Ionicons name="chevron-forward" size={20} color="#000000" />
+                </TouchableOpacity>
+              </Card>
+              <Card style={styles.card}>
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    /* Handle My Account Press */
+                  }}
+                >
+                  <Text style={styles.optionText}>Help & Support</Text>
+                  <Ionicons name="chevron-forward" size={20} color="#000000" />
+                </TouchableOpacity>
+              </Card>
 
-  <Card style={styles.card}>
-    <TouchableOpacity
-      style={styles.option}
-      onPress={() => {
-        /* Handle My Account Press */
-      }}
-    >
-      <Text style={styles.optionText}>Refer your friends!</Text>
-      <Ionicons name="share-social-outline" size={24} color="#000" />
-    </TouchableOpacity>
-  </Card>
-
-</TouchableOpacity>
-
-
-
-{/* Log out Button */}
-<TouchableOpacity onPress={handleLogout}>
-  <Card style={styles.card}>
-    <TouchableOpacity style={styles.option}>
-      <Text style={[styles.optionText, { color: "red" }]}>Log out</Text>
-      <Ionicons name="log-out-outline" size={20} color="red" />
-    </TouchableOpacity>
-  </Card>
-</TouchableOpacity>
+              <Card style={styles.card}>
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    /* Handle My Account Press */
+                  }}
+                >
+                  <Text style={styles.optionText}>Refer your friends!</Text>
+                  <Ionicons
+                    name="share-social-outline"
+                    size={24}
+                    color="#000"
+                  />
+                </TouchableOpacity>
+              </Card>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleLogout} activeOpacity={0.7}>
+              <Card style={styles.card}>
+                <View style={styles.option}>
+                  <Text style={[styles.optionText, { color: "red" }]}>
+                    Log out
+                  </Text>
+                  <Ionicons name="log-out-outline" size={20} color="red" />
+                </View>
+              </Card>
+            </TouchableOpacity>
           </>
         )}
 
@@ -280,6 +283,7 @@ const styles = StyleSheet.create({
   },
   headerCard: {
     marginBottom: height * 0.02, // Responsive margin
+    backgroundColor: "rgb(122, 115, 150)",
   },
   headerContent: {
     // alignItems: "center",
@@ -347,7 +351,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: width * 0.05, // Responsive padding
-    
   },
   card: {
     marginVertical: 10, // Adds spacing between cards
