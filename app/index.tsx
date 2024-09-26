@@ -5,7 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TabLayout from "./(tabs)/_layout";
 import Login from "@/components/Screens/Login/login";
 import Verifyotp from "@/components/Screens/Login/verifytop";
-import Signup from "@/components/Screens/signup";
+import Signup from "@/components/Screens/Signup/signup";
 
 
 export type RootStackParamList = {

@@ -13,8 +13,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  NavigationProp,
-  RouteProp,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -23,8 +21,7 @@ import * as Location from "expo-location";
 import { jwtDecode } from "jwt-decode";
 import { RootStackParamList } from "..";
 import { userCookie } from "@/app/api-request/config";
-import TwoWheelerIcon from "@mui/icons-material/TwoWheeler";
-import LocalShippingTwoToneIcon from "@mui/icons-material/LocalShippingTwoTone";
+
 
 
 const Home = () => {
