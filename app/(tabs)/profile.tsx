@@ -41,6 +41,7 @@ const Profile = () => {
         const decodedToken: any = jwtDecode(token);
         const user_id = decodedToken.id;
         setUser_id(user_id);
+        console.log(`UserID: ${user_id}`)
 
         const userData = await getUserById(user_id);
         console.log("User Data:", userData);
@@ -133,66 +134,62 @@ const Profile = () => {
                 >
                   <Text style={styles.optionTextedit}>
                     Edit Profile{" "}
-                    <Ionicons
-                      name="chevron-forward"
-                      size={12}
-                      color="#fe6604"
-                    />
+                    <Ionicons name="chevron-forward" size={12} color="black" />
                   </Text>
                 </TouchableOpacity>
               </Card.Content>
             </Card>
             <TouchableOpacity
-              onPress={() => {
-                /* Handle My Account Press */
-              }}
+              onPress={() =>
+                navigation.navigate("SavedAddressesScreen" as never)
+              }
             >
               <Card style={styles.card}>
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    /* Handle My Account Press */
-                  }}
-                >
-                  <Text style={styles.optionText}>Addresses</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#000000" />
-                </TouchableOpacity>
+                <View style={styles.option}>
+                  <Text style={styles.optionText}>Saved Addresses</Text>
+                  <Ionicons name="home-outline" size={24} color="#000000" />
+                </View>
               </Card>
-              <Card style={styles.card}>
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    /* Handle My Account Press */
-                  }}
-                >
-                  <Text style={styles.optionText}>Help & Support</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#000000" />
-                </TouchableOpacity>
-              </Card>
+            </TouchableOpacity>
 
+            {/* Help & Support */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("HelpAndSupport" as never)}
+            >
               <Card style={styles.card}>
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    /* Handle My Account Press */
-                  }}
-                >
+                <View style={styles.option}>
+                  <Text style={styles.optionText}>Help & Support</Text>
+                  <Ionicons
+                    name="chatbubble-outline"
+                    size={24}
+                    color="#000000"
+                  />
+                </View>
+              </Card>
+            </TouchableOpacity>
+
+            {/* Refer your friends */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ReferYourFriends" as never)}
+            >
+              <Card style={styles.card}>
+                <View style={styles.option}>
                   <Text style={styles.optionText}>Refer your friends!</Text>
                   <Ionicons
                     name="share-social-outline"
                     size={24}
-                    color="#000"
+                    color="#000000"
                   />
-                </TouchableOpacity>
+                </View>
               </Card>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleLogout} activeOpacity={0.7}>
+
+            {/* Logout */}
+            <TouchableOpacity onPress={() => console.log("Logout")}>
               <Card style={styles.card}>
                 <View style={styles.option}>
-                  <Text style={[styles.optionText, { color: "red" }]}>
-                    Log out
-                  </Text>
-                  <Ionicons name="log-out-outline" size={20} color="red" />
+                  <Text style={styles.optionText}>Logout</Text>
+                  <Ionicons name="log-out-outline" size={24} color="#000000" />
                 </View>
               </Card>
             </TouchableOpacity>
@@ -283,7 +280,7 @@ const styles = StyleSheet.create({
   },
   headerCard: {
     marginBottom: height * 0.02, // Responsive margin
-    backgroundColor: "rgb(122, 115, 150)",
+    backgroundColor: "#f0dcf8",
   },
   headerContent: {
     // alignItems: "center",
@@ -364,7 +361,7 @@ const styles = StyleSheet.create({
   },
   optionTextedit: {
     fontSize: width * 0.045, // 4.5% of screen width
-    color: "#fe6604",
+    color: "black",
     marginLeft: width * 0.02, // Responsive margin
   },
   header: {
