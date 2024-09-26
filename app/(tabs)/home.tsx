@@ -13,8 +13,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  NavigationProp,
-  RouteProp,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
