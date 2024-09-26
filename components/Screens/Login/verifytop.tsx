@@ -35,6 +35,8 @@ const Verifyotp: React.FC<Props> = ({ route, navigation }) => {
   const params = route.params || {};
   const phone = (params.phone || "").toString();
   const orderId = (params.orderId || "").toString();
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading
 
   console.log("Params:", params);
   console.log("Phone (type):", phone, typeof phone);
@@ -64,8 +66,8 @@ const Verifyotp: React.FC<Props> = ({ route, navigation }) => {
         console.log("Decoded user ID:", user_id);
 
         navigation.navigate("Tablayout", {
-            user_id: user_id,
-            phone: phone
+          user_id: user_id,
+          phone: phone,
         });
       } else if (response.error === "User not found") {
         // Navigate to EleMoveScreen if user is not found
@@ -81,17 +83,32 @@ const Verifyotp: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
-  const handleResendOtp = async () => {
+  const handleSendOtp = async () => {
+    if (!phone) {
+      setError("Phone number is required");
+      return;
+    }
+
+    setError("");
+    setIsLoading(true); // Start loading indicator
+
     try {
+      // Send OTP request to OTPless API
       const response = await sendUserOTP({ phone });
-      if (response.message === "OTP sent successfully") {
-        Alert.alert("Success", "OTP Resent Successfully!");
+      if (response.orderId) {
+        // OTP sent successfully
+        console.log("OTP sent successfully");
+        await AsyncStorage.setItem("isLoggedIn", "true");
+        navigation.navigate("Verifyotp", { phone, orderId: response.orderId });
       } else {
-        Alert.alert("Error", response.error || "Failed to resend OTP");
+        // Handle unexpected response format
+        setError(response.error || "Failed to send OTP");
       }
-    } catch (error) {
-      console.error("Error resending OTP:", error);
-      Alert.alert("Error", "Failed to resend OTP");
+    } catch (error: any) {
+      console.error("Error sending OTP:", error.message);
+      setError(error.message || "Failed to send OTP");
+    } finally {
+      setIsLoading(false); // Stop loading indicator
     }
   };
 
@@ -141,7 +158,7 @@ const Verifyotp: React.FC<Props> = ({ route, navigation }) => {
         <TouchableOpacity style={styles.submitButton} onPress={handleVerifyOtp}>
           <Text style={styles.submitButtonText}>Verify OTP</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.resendButton} onPress={handleResendOtp}>
+        <TouchableOpacity style={styles.resendButton} onPress={handleSendOtp}>
           <Text style={styles.resendButtonText}>Resend OTP</Text>
         </TouchableOpacity>
       </View>

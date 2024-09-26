@@ -16,6 +16,7 @@ class Config implements Config_Interface {
 
 const config: Config = new Config();
 
+
 config.API_DOMAIN_URL = "http://192.168.0.65:3000";
 config.GOOGLE_API_KEY = "AIzaSyCdUKj-j6A5yysU6wwkSfZF-2y-0qXofk";
 config.SOCKET_IO_URL = env === "prod" ? "" : "http://192.168.0.65:3000"; 

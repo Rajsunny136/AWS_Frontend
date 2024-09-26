@@ -213,20 +213,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    paddingHorizontal: isSmallDevice ? 12 : 16,
+    paddingHorizontal: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
   },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: isSmallDevice ? 12 : 16,
+    padding: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
     borderRadius: 10,
-    marginTop: 16,
+    marginTop: height * 0.02, // Responsive margin
     justifyContent: "space-between",
     overflow: "hidden",
   },
   addressText: {
-    fontSize: isSmallDevice ? 14 : 16,
+    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
     fontWeight: "bold",
     color: "#333",
   },
@@ -238,71 +238,70 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginTop: 24,
+    marginTop: height * 0.03, // Responsive margin
   },
   gridItem: {
     width: isSmallDevice ? "100%" : "48%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    paddingVertical: isSmallDevice ? 15 : 20,
-    paddingHorizontal: 16,
+    paddingVertical: isSmallDevice ? height * 0.02 : height * 0.025, // Responsive padding
+    paddingHorizontal: width * 0.04, // Responsive padding
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: height * 0.02, // Responsive margin
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   iconImage: {
-    width: isSmallDevice ? 60 : 90,
-    height: isSmallDevice ? 50 : 60,
-    marginBottom: 8,
+    width: isSmallDevice ? width * 0.15 : width * 0.23, // Responsive width
+    height: isSmallDevice ? height * 0.08 : height * 0.1, // Responsive height
+    marginBottom: height * 0.01, // Responsive margin
   },
   iconImagepack: {
-    width: isSmallDevice ?50 : 90,
-    height: isSmallDevice ? 60 : 80,
-    marginBottom: 8,
+    width: isSmallDevice ? width * 0.1 : width * 0.23, // Responsive width
+    height: isSmallDevice ? height * 0.07 : height * 0.1, // Responsive height
+    marginBottom: height * 0.01, // Responsive margin
   },
-
   gridText: {
-    fontSize: isSmallDevice ? 12 : 14,
+    fontSize: isSmallDevice ? width * 0.03 : width * 0.035, // Responsive font size
     color: "#333",
     fontWeight: "bold",
   },
   announcementContainer: {
-    marginTop: 24,
-    padding: 16,
+    marginTop: height * 0.03, // Responsive margin
+    padding: width * 0.04, // Responsive padding
     backgroundColor: "#fff",
     borderRadius: 10,
   },
   announcementTitle: {
-    fontSize: isSmallDevice ? 16 : 18,
+    fontSize: isSmallDevice ? width * 0.04 : width * 0.045, // Responsive font size
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 12,
+    marginBottom: height * 0.02, // Responsive margin
   },
   announcementCard: {
     backgroundColor: "#f1f1f1",
     borderRadius: 10,
-    padding: isSmallDevice ? 12 : 16,
+    padding: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
   },
   announcementText: {
-    fontSize: isSmallDevice ? 14 : 16,
+    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
     color: "#333",
   },
   viewAllText: {
     color: "#1e90ff",
-    marginTop: 8,
+    marginTop: height * 0.01, // Responsive margin
   },
   footer: {
-    paddingVertical: 16,
+    paddingVertical: height * 0.02, // Responsive padding
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f1f1f1",
-    marginTop: 24,
+    marginTop: height * 0.03, // Responsive margin
   },
   footerText: {
-    fontSize: isSmallDevice ? 14 : 16,
+    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
     color: "#666",
   },
 });
