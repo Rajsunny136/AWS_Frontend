@@ -19,7 +19,6 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import { jwtDecode } from "jwt-decode";
-import { RootStackParamList } from "..";
 import { userCookie } from "@/app/api-request/config";
 
 
@@ -130,6 +129,10 @@ const Home = () => {
     navigation.navigate("UserLandingPage" as never);
   };
 
+  const handleNavigation = (screenName: string) => {
+    navigation.navigate(screenName as never);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.locationContainer}>
@@ -153,8 +156,12 @@ const Home = () => {
         <Ionicons name="chevron-down" size={24} color="black" />
       </View>
 
+      {/* Grid Items */}
       <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={() => handleNavigation("PickupDropScreen")}
+        >
           <Text style={styles.gridText}>Trucks</Text>
           <Image
             style={styles.iconImage}
@@ -162,7 +169,10 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={() => handleNavigation("PickupDropScreen")}
+        >
           <Text style={styles.gridText}>2 Wheeler</Text>
           <Image
             style={styles.iconImage}
@@ -170,7 +180,10 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={() => handleNavigation("PickupDropScreen")}
+        >
           <Text style={styles.gridText}>Packers & Movers</Text>
           <Image
             style={styles.iconImagepack}
@@ -178,8 +191,11 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem}>
-          <Text style={styles.gridText}>3 wheeler</Text>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={() => handleNavigation("PickupDropScreen")}
+        >
+          <Text style={styles.gridText}>3 Wheeler</Text>
           <Image
             style={styles.iconImage}
             source={require("../../assets/images/Auto.png")}
@@ -191,9 +207,7 @@ const Home = () => {
       <View style={styles.announcementContainer}>
         <Text style={styles.announcementTitle}>Announcements</Text>
         <TouchableOpacity style={styles.announcementCard}>
-          <Text style={styles.announcementText}>
-            Introducing ShipEase Enterprise
-          </Text>
+          <Text style={styles.announcementText}>Introducing ShipEase Enterprise</Text>
           <Text style={styles.viewAllText}>View all</Text>
         </TouchableOpacity>
       </View>
@@ -205,6 +219,7 @@ const Home = () => {
     </ScrollView>
   );
 };
+
 
 const { width, height } = Dimensions.get("window");
 const isSmallDevice = width < 375; // Example breakpoint for small devices
