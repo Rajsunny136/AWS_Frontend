@@ -94,14 +94,14 @@ const PickupDropScreen = () => {
                         label="Pickup Location"
                         value={pickupLocation ?? ''}
                         onChangeText={(text) => setPickupLocation(text)}
-                        onSelectMap={() => navigation.navigate('' as never,)}
+                        onSelectMap={() => navigation.navigate('MapSelectionScreen' as never,)}
                         onClear={clearPickupLocation}
                     />
                     <LocationInput
                         label="Drop Location"
                         value={dropLocation ?? ''}
                         onChangeText={(text) => setDropLocation(text)}
-                        onSelectMap={() => navigation.navigate('' as never,)}
+                        onSelectMap={() => navigation.navigate('MapSelectionScreen' as never,)}
                         onClear={clearDropLocation}
                     />
                 </>

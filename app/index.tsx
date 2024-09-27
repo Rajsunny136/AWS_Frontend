@@ -22,15 +22,23 @@ const Index = () => {
 
     return (
         <>
-            <StatusBar barStyle="dark-content" backgroundColor="pink" />
-            <NavigationContainer independent={true}>
-                <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-
+           <StatusBar
+          backgroundColor="#A487E7" // Same color as the header
+          barStyle="light-content" // White text/icons for dark background
+        />
+        <NavigationContainer independent={true}>
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerStyle: { backgroundColor: "#A487E7" },
+              headerTintColor: "white",
+            }}
+          >
                     <Stack.Screen name="Login" component={Login}/>
                     <Stack.Screen name="Tablayout" component={TabLayout} options={{ headerShown: false }} />
                     <Stack.Screen name="Verifyotp" component={Verifyotp}/>
                     <Stack.Screen name="Signup" component={Signup}/>
-                    <Stack.Screen name="PickupDropScreen" component={PickupDropScreen} options={{ headerShown: true }} />
+                    <Stack.Screen name="PickupDropScreen" component={PickupDropScreen}  options={{ headerShown: true,title:"Select Location" }} />
 
 
                 </Stack.Navigator>

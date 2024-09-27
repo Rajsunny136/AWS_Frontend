@@ -22,5 +22,5 @@ config.SOCKET_IO_URL = env === "prod" ? "" : "http://192.168.0.192:3000";
 
 export default config;
 
-export const origin = env === "prod" ? "" :"http://192.168.0.65:3000";
+export const origin = env === "prod" ? "" :"http://192.168.0.192:3000";
 export const userCookie = "userToken";
