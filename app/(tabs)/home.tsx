@@ -8,37 +8,44 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  Animated,
   Dimensions,
+  Animated,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
-import { jwtDecode } from "jwt-decode";
 import { userCookie } from "@/app/api-request/config";
+import config from "@/app/api-request/config";
+import axios from "axios";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { jwtDecode } from "jwt-decode";
 
+// Define the params expected for PickupDropScreen
+type PickupDropScreenParams = {
+  name: string | null;
+  address: string;
+  phone: string | null;
+};
 
+// Define the navigation prop type
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  { PickupDropScreen: PickupDropScreenParams },
+  'PickupDropScreen'
+>;
 
 const Home = () => {
   const route = useRoute();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const [user_id, setUserId] = useState<string>("");
   const [address, setAddress] = useState<string>("Fetching location...");
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false); // For refresh control
+  const [userPhone, setUserPhone] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const scrollAnim = useRef(new Animated.Value(0)).current;
-
-  // Fetch user's current location using Expo Location
-  interface ExtendedLocationGeocodedAddress
-    extends Location.LocationGeocodedAddress {
-    subLocality?: string;
-    neighbourhood?: string;
-    locality?: string;
-  }
 
   const fetchCurrentLocation = async () => {
     setLoading(true);
@@ -50,91 +57,74 @@ const Home = () => {
         return;
       }
 
-      let { coords } = await Location.getCurrentPositionAsync({});
-      let places = (await Location.reverseGeocodeAsync({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      })) as ExtendedLocationGeocodedAddress[]; // Use the extended type
+      const { coords } = await Location.getCurrentPositionAsync({});
+      const googleGeocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.latitude},${coords.longitude}&key=${config.GOOGLE_API_KEY}`;
 
-      if (places && places.length > 0) {
-        const place = places[0];
+      const response = await axios.get(googleGeocodingUrl);
+      const results = response.data.results;
 
-        // Log the place object to inspect its properties
-        console.log(place);
-
-        const street = place.street || place.name || "";
-        const area = (place as any).subLocality || ""; // Using type assertion to access subLocality
-        const city = place.city || place.locality || "";
-        const state = place.region || "";
-
-        console.log(
-          `Street: ${street}, Area: ${area}, City: ${city}, State: ${state}`
-        );
-
-        setAddress(` ${street}, ${area},${city}, ${state}`);
+      if (results && results.length > 0) {
+        const detailedAddress = results[0].formatted_address;
+        setAddress(detailedAddress);
       } else {
         setAddress("Location not found");
       }
     } catch (error) {
-      console.error("Error fetching location:", error);
       setAddress("Failed to fetch location");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const token = await AsyncStorage.getItem(userCookie);
-        if (!token) {
-          throw new Error("Token not found in AsyncStorage");
-        }
-        const decodedToken: any = jwtDecode(token);
-        const user_id = decodedToken.id;
-        console.log(`UserID : ${user_id}`);
-        if (user_id) {
-          setUserId(user_id);
-        }
-      } catch (error) {
-        console.error("Failed to decode token or retrieve user_id:", error);
-        Alert.alert("Error", "Failed to retrieve user information.");
-        setLoading(false);
+  const initialize = async () => {
+    try {
+      const token = await AsyncStorage.getItem(userCookie);
+      if (!token) {
+        throw new Error("Token not found in AsyncStorage");
       }
-    };
+      const decodedToken: any = jwtDecode(token);
+      const user_id = decodedToken.id;
+      const user_phone = decodedToken.phone;
+      const user_name = decodedToken.name;
 
+      setUserPhone(user_phone);
+      setUserName(user_name);
+      if (user_id) {
+        setUserId(user_id);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     initialize();
     fetchCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    const startMarquee = () => {
-      scrollAnim.setValue(0);
-      Animated.loop(
-        Animated.timing(scrollAnim, {
-          toValue: -100, // Adjust this value based on your text width
-          duration: 8000, // Adjust duration for speed
-          useNativeDriver: true,
-        })
-      ).start();
-    };
-
-    if (!loading) {
-      startMarquee();
+  const handleNavigation = () => {
+    // Ensure navigation only happens if address and userPhone are available
+    if (address && userPhone && userName) {
+      navigation.navigate("PickupDropScreen", { name: userName,address: address, phone: userPhone,});
+    } else {
+      Alert.alert("Error", "Failed to get necessary details for navigation.");
     }
-  }, [loading]);
-
-  const handleServiceClick = () => {
-    // Navigate to UserLandingPage with service type, phone, and user_id
-    navigation.navigate("UserLandingPage" as never);
   };
 
-  const handleNavigation = (screenName: string) => {
-    navigation.navigate(screenName as never);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await initialize();
+    await fetchCurrentLocation();
+    setRefreshing(false);
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.locationContainer}>
         <Ionicons name="location-outline" size={24} color="green" />
         {loading ? (
@@ -160,7 +150,7 @@ const Home = () => {
       <View style={styles.gridContainer}>
         <TouchableOpacity
           style={styles.gridItem}
-          onPress={() => handleNavigation("PickupDropScreen")}
+          onPress={handleNavigation}
         >
           <Text style={styles.gridText}>Trucks</Text>
           <Image
@@ -171,7 +161,7 @@ const Home = () => {
 
         <TouchableOpacity
           style={styles.gridItem}
-          onPress={() => handleNavigation("PickupDropScreen")}
+          onPress={handleNavigation}
         >
           <Text style={styles.gridText}>2 Wheeler</Text>
           <Image
@@ -182,7 +172,7 @@ const Home = () => {
 
         <TouchableOpacity
           style={styles.gridItem}
-          onPress={() => handleNavigation("PickupDropScreen")}
+          onPress={handleNavigation}
         >
           <Text style={styles.gridText}>Packers & Movers</Text>
           <Image
@@ -193,7 +183,7 @@ const Home = () => {
 
         <TouchableOpacity
           style={styles.gridItem}
-          onPress={() => handleNavigation("PickupDropScreen")}
+          onPress={handleNavigation}
         >
           <Text style={styles.gridText}>3 Wheeler</Text>
           <Image
@@ -220,7 +210,6 @@ const Home = () => {
   );
 };
 
-
 const { width, height } = Dimensions.get("window");
 const isSmallDevice = width < 375; // Example breakpoint for small devices
 
@@ -242,7 +231,7 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
-    fontWeight: "bold",
+    fontWeight: "400",
     color: "#333",
   },
   marqueeContainer: {
