@@ -7,13 +7,23 @@ import Login from "@/components/Screens/Login/login";
 import Verifyotp from "@/components/Screens/Login/verifytop";
 import Signup from "@/components/Screens/Signup/signup";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
+import SelectPickupLocation from "@/components/Screens/Select_location/SelectPickupLocation";
+import SenderDetailsScreen from "@/components/Screens/Select_location/SenderDetailsScreen";
+import SelectPickupOnMapScreen from "@/components/Screens/Select_location/SelectPickupOnMapScreen";
+import ReceiverDetailsScreen from "@/components/Screens/Select_location/ReceiverDetailsScreen";
+import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 
 export type RootStackParamList = {
     Tablayout: { user_id: any, phone: string};
     Login: { phone: string; user_id: any };
     Verifyotp: { phone: string; orderId: string  };
-    Signup:{ phone: string }
-    PickupDropScreen:undefined
+    Signup:{ phone: string };
+    PickupDropScreen: {name: string; address:string; phone:string;};
+    SelectPickupLocation:undefined;
+    SenderDetailsScreen:{location:any;};
+    SelectPickupOnMapScreen:undefined;
+    ReceiverDetailsScreen: { location:any,name: string; address:string; phone:string;};
+    SelectDropOnMapScreen: { location:any,name: string; address:string; phone:string;};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -38,8 +48,15 @@ const Index = () => {
                     <Stack.Screen name="Tablayout" component={TabLayout} options={{ headerShown: false }} />
                     <Stack.Screen name="Verifyotp" component={Verifyotp}/>
                     <Stack.Screen name="Signup" component={Signup}/>
-                    <Stack.Screen name="PickupDropScreen" component={PickupDropScreen}  options={{ headerShown: true,title:"Select Location" }} />
+                    <Stack.Screen name="PickupDropScreen" component={PickupDropScreen} />
 
+                    <Stack.Screen name="SelectPickupLocation" component={SelectPickupLocation}  options={{ headerShown: true,title:"Select Pickup Location" }} />
+                    <Stack.Screen name="SenderDetailsScreen" component={SenderDetailsScreen}  options={{ headerShown: true,title:"Sender Details" }} />
+                    <Stack.Screen name="SelectPickupOnMapScreen" component={SelectPickupOnMapScreen}  options={{ headerShown: true,title:"Select Location" }} />
+                    <Stack.Screen name="ReceiverDetailsScreen" component={ReceiverDetailsScreen}  options={{ headerShown: true,title:"Receiver Details" }} />
+                    <Stack.Screen name="SelectDropOnMapScreen" component={SelectDropOnMapScreen}  options={{ headerShown: true,title:"Select Location" }} />
+
+                    
 
                 </Stack.Navigator>
             </NavigationContainer>
