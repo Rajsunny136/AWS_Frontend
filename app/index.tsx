@@ -11,7 +11,7 @@ import ReferYourFriends from "@/components/Screens/Profile/Refer_Friends";
 import SavedAddressesScreen from "@/components/Screens/Profile/SavedAddress";
 import NewAddress from "@/components/Screens/Profile/Add_Address";
 import Chooseonmap from "@/components/Screens/Profile/Choose_on_Map";
-
+import ChatScreen from "@/components/Screens/Profile/Live_chat";
 
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -23,6 +23,9 @@ export type RootStackParamList = {
   SavedAddressesScreen: { address_id: any };
   NewAddress: { address_id?: number };
   Chooseonmap: { address_id?: number };
+  ChatScreen: undefined;
+  DeliveryScreen: undefined;
+  RecieverDetails: { location: any };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -84,6 +87,8 @@ const Index = () => {
               component={Chooseonmap}
               options={{ title: "Map" }}
             />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            
           </Stack.Navigator>
         </NavigationContainer>
       </>

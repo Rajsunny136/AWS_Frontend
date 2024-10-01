@@ -36,17 +36,20 @@ export const createUser = async (data: any) => {
 export const getUserById = async (id: string) => {
     try {
         const token = await getAuthToken();
+        // console.log("Token retrieved:", token); // Log the retrieved token
+
         const response = await axios({
             method: 'get',
-            url: `${origin}/api/v1/user/${id}`,
+            url: `${origin}/api/v1/user/${id}`, // Ensure `origin` is defined correctly
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
         });
-        return response.data;
+        return response.data; // This should contain user details
     } catch (error: any) {
-        return error.response?.data?.message || "An unknown error occurred";
+        console.error("Error in getUserById:", error); // Log full error for debugging
+        throw new Error(error.response?.data?.message || "An unknown error occurred");
     }
 };
 

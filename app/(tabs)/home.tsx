@@ -154,7 +154,10 @@ const Home = () => {
       </View>
 
       <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={() => navigation.navigate("DeliveryScreen" as never)} // Navigate to DeliveryScreen
+        >
           <Text style={styles.gridText}>Trucks</Text>
           <Image
             style={styles.iconImage}
