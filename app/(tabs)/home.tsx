@@ -47,20 +47,12 @@ const Home = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const scrollAnim = useRef(new Animated.Value(0)).current;
   interface ExtendedLocationGeocodedAddress
-<<<<<<< Updated upstream
     extends Location.LocationGeocodedAddress {
     subLocality?: string;
     neighbourhood?: string;
     locality?: string;
   }
 
-=======
-  extends Location.LocationGeocodedAddress {
-  subLocality?: string;
-  neighbourhood?: string;
-  locality?: string;
-}
->>>>>>> Stashed changes
 
   const fetchCurrentLocation = async () => {
     setLoading(true);
