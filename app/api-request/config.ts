@@ -16,6 +16,7 @@
 
 // const config: Config = new Config();
 
+<<<<<<< Updated upstream
 // config.API_DOMAIN_URL = "http://1192.168.0.153:3000";
 // config.GOOGLE_API_KEY = "AIzaSyCdUKj-j6A5yysU6wwkSfZF-2y-77qXofk";
 // config.SOCKET_IO_URL = env == "prod" ? "" : "http://1192.168.0.153:3000"; 
@@ -23,6 +24,15 @@
 // export default config;
 
 // export const origin = env == "prod" ? "" : "http://1192.168.0.153:3000";
+=======
+// config.API_DOMAIN_URL = "http://192.168.0.192:3000";
+// config.GOOGLE_API_KEY = "AIzaSyCdUKj-j6A5yysU6wwkSfZF-2y-77qXofk";
+// config.SOCKET_IO_URL = env == "prod" ? "" : "http://192.168.0.192:3000"; 
+
+// export default config;
+
+// export const origin = env == "prod" ? "" : "http://192.168.0.192:3000";
+>>>>>>> Stashed changes
 // export const userCookie = "userToken";
 
 interface Config_Interface {
@@ -48,12 +58,18 @@ if (env === "production") {
     config.GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || ""; // Set your Google API key here
     config.SOCKET_IO_URL = "https://ship.genamplifysol.com"; // Socket URL for production
 } else {
+<<<<<<< Updated upstream
     config.API_DOMAIN_URL = "http://1192.168.0.153:3000"; // Development URL
     config.GOOGLE_API_KEY = "AIzaSyA9qviqi7tO8nndT6WAP_O5qr3NrfpILl0";
     config.SOCKET_IO_URL = "http://1192.168.0.153:3000"; // Development Socket URL
+=======
+    config.API_DOMAIN_URL = "http://192.168.0.192:3000"; // Development URL
+    config.GOOGLE_API_KEY = "AIzaSyA9qviqi7tO8nndT6WAP_O5qr3NrfpILl0";
+    config.SOCKET_IO_URL = "http://192.168.0.192:3000"; // Development Socket URL
+>>>>>>> Stashed changes
 }
 
 export default config;
 
-export const origin = env === "production" ? "https://ship.genamplifysol.com" : "http://192.168.0.153:3000";
+export const origin = env === "production" ? "https://ship.genamplifysol.com" : "http://192.168.0.192:3000";
 export const userCookie = "userToken";

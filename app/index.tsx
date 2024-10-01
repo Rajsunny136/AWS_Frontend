@@ -98,6 +98,7 @@ const Index = () => {
           />
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
+<<<<<<< Updated upstream
           <Stack.Screen
             name="PickupDropScreen"
             component={PickupDropScreen}
@@ -130,6 +131,61 @@ const Index = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
+=======
+      <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerStyle: { backgroundColor: "#A487E7" },
+              headerTintColor: "white",
+            }}
+          >
+        <Stack.Screen name="Login" component={Login}/>
+        <Stack.Screen
+          name="Tablayout"
+          component={TabLayout}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Verifyotp"
+          component={Verifyotp}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen
+          name="HelpAndSupport"
+          component={HelpAndSupport}
+          options={{ title: "Help And Support" }}
+        />
+        <Stack.Screen
+          name="ReferYourFriends"
+          component={ReferYourFriends}
+          options={{ title: "Referral" }}
+        />
+        <Stack.Screen
+          name="SavedAddressesScreen"
+          component={SavedAddressesScreen}
+          options={{ title: "Saved Address" }}
+        />
+        <Stack.Screen
+          name="NewAddress"
+          component={NewAddress}
+          options={{ title: "Address" }}
+        />
+        <Stack.Screen
+          name="Chooseonmap"
+          component={Chooseonmap}
+          options={{ title: "Map" }}
+        />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="PickupDropScreen" component={PickupDropScreen} />
+        <Stack.Screen name="SelectPickupLocation" component={SelectPickupLocation} options={{ headerShown: true, title: "Select Pickup Location" }} />
+        <Stack.Screen name="SenderDetailsScreen" component={SenderDetailsScreen} options={{ headerShown: true, title: "Sender Details" }} />
+        <Stack.Screen name="SelectPickupOnMapScreen" component={SelectPickupOnMapScreen} options={{ headerShown: true, title: "Select Location" }} />
+        <Stack.Screen name="ReceiverDetailsScreen" component={ReceiverDetailsScreen} options={{ headerShown: true, title: "Receiver Details" }} />
+        <Stack.Screen name="SelectDropOnMapScreen" component={SelectDropOnMapScreen} options={{ headerShown: true, title: "Select Location" }} />
+        </Stack.Navigator>
+      </NavigationContainer >
+>>>>>>> Stashed changes
     </>
   );
 };
