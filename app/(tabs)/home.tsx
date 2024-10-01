@@ -19,7 +19,7 @@ import * as Location from "expo-location";
 import { userCookie } from "@/app/api-request/config";
 import config from "@/app/api-request/config";
 import axios from "axios";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { jwtDecode } from "jwt-decode";
 
 // Define the params expected for PickupDropScreen
@@ -32,7 +32,7 @@ type PickupDropScreenParams = {
 // Define the navigation prop type
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   { PickupDropScreen: PickupDropScreenParams },
-  'PickupDropScreen'
+  "PickupDropScreen"
 >;
 
 const Home = () => {
@@ -105,7 +105,11 @@ const Home = () => {
   const handleNavigation = () => {
     // Ensure navigation only happens if address and userPhone are available
     if (address && userPhone && userName) {
-      navigation.navigate("PickupDropScreen", { name: userName,address: address, phone: userPhone,});
+      navigation.navigate("PickupDropScreen", {
+        name: userName,
+        address: address,
+        phone: userPhone,
+      });
     } else {
       Alert.alert("Error", "Failed to get necessary details for navigation.");
     }
@@ -148,10 +152,7 @@ const Home = () => {
 
       {/* Grid Items */}
       <View style={styles.gridContainer}>
-        <TouchableOpacity
-          style={styles.gridItem}
-          onPress={handleNavigation}
-        >
+        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
           <Text style={styles.gridText}>Trucks</Text>
           <Image
             style={styles.iconImage}
@@ -159,10 +160,7 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-          onPress={handleNavigation}
-        >
+        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
           <Text style={styles.gridText}>2 Wheeler</Text>
           <Image
             style={styles.iconImage}
@@ -170,10 +168,7 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-          onPress={handleNavigation}
-        >
+        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
           <Text style={styles.gridText}>Packers & Movers</Text>
           <Image
             style={styles.iconImagepack}
@@ -181,10 +176,7 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.gridItem}
-          onPress={handleNavigation}
-        >
+        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
           <Text style={styles.gridText}>3 Wheeler</Text>
           <Image
             style={styles.iconImage}
@@ -197,7 +189,9 @@ const Home = () => {
       <View style={styles.announcementContainer}>
         <Text style={styles.announcementTitle}>Announcements</Text>
         <TouchableOpacity style={styles.announcementCard}>
-          <Text style={styles.announcementText}>Introducing ShipEase Enterprise</Text>
+          <Text style={styles.announcementText}>
+            Introducing ShipEase Enterprise
+          </Text>
           <Text style={styles.viewAllText}>View all</Text>
         </TouchableOpacity>
       </View>
