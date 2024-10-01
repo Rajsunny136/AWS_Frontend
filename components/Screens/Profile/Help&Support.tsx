@@ -59,7 +59,7 @@ const HelpAndSupport = () => {
 
         <TouchableOpacity
           style={styles.contactItem}
-          onPress={() => navigation.navigate("LiveChat" as never)}
+          onPress={() => navigation.navigate("ChatScreen" as never)}
         >
           <Ionicons name="chatbubbles-outline" size={24} color="#4CAF50" />
           <Text style={styles.contactText}>Live Chat</Text>
