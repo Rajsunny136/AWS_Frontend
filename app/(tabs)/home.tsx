@@ -19,7 +19,7 @@ import * as Location from "expo-location";
 import { userCookie } from "@/app/api-request/config";
 import config from "@/app/api-request/config";
 import axios from "axios";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { jwtDecode } from "jwt-decode";
 
 // Define the params expected for PickupDropScreen
@@ -32,7 +32,7 @@ type PickupDropScreenParams = {
 // Define the navigation prop type
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   { PickupDropScreen: PickupDropScreenParams },
-  "PickupDropScreen"
+  'PickupDropScreen'
 >;
 
 const Home = () => {
@@ -46,13 +46,6 @@ const Home = () => {
   const [userPhone, setUserPhone] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const scrollAnim = useRef(new Animated.Value(0)).current;
-  interface ExtendedLocationGeocodedAddress
-    extends Location.LocationGeocodedAddress {
-    subLocality?: string;
-    neighbourhood?: string;
-    locality?: string;
-  }
-
 
   const fetchCurrentLocation = async () => {
     setLoading(true);
@@ -64,38 +57,25 @@ const Home = () => {
         return;
       }
 
-      let { coords } = await Location.getCurrentPositionAsync({});
-      let places = (await Location.reverseGeocodeAsync({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      })) as ExtendedLocationGeocodedAddress[]; // Use the extended type
+      const { coords } = await Location.getCurrentPositionAsync({});
+      const googleGeocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.latitude},${coords.longitude}&key=${config.GOOGLE_API_KEY}`;
 
-      if (places && places.length > 0) {
-        const place = places[0];
+      const response = await axios.get(googleGeocodingUrl);
+      const results = response.data.results;
 
-        // Log the place object to inspect its properties
-        console.log(place);
-
-        const street = place.street || place.name || "";
-        const area = (place as any).subLocality || ""; // Using type assertion to access subLocality
-        const city = place.city || place.locality || "";
-        const state = place.region || "";
-
-        console.log(
-          `Street: ${street}, Area: ${area}, City: ${city}, State: ${state}`
-        );
-
-        setAddress(` ${street}, ${area},${city}, ${state}`);
+      if (results && results.length > 0) {
+        const detailedAddress = results[0].formatted_address;
+        setAddress(detailedAddress);
       } else {
         setAddress("Location not found");
       }
     } catch (error) {
-      console.error("Error fetching location:", error);
       setAddress("Failed to fetch location");
     } finally {
       setLoading(false);
     }
   };
+
   const initialize = async () => {
     try {
       const token = await AsyncStorage.getItem(userCookie);
@@ -125,11 +105,7 @@ const Home = () => {
   const handleNavigation = () => {
     // Ensure navigation only happens if address and userPhone are available
     if (address && userPhone && userName) {
-      navigation.navigate("PickupDropScreen", {
-        name: userName,
-        address: address,
-        phone: userPhone,
-      });
+      navigation.navigate("PickupDropScreen", { name: userName,address: address, phone: userPhone,});
     } else {
       Alert.alert("Error", "Failed to get necessary details for navigation.");
     }
@@ -157,23 +133,6 @@ const Home = () => {
       startMarquee();
     }
   }, [loading]);
-
-   useEffect(() => {
-     const startMarquee = () => {
-       scrollAnim.setValue(0);
-       Animated.loop(
-         Animated.timing(scrollAnim, {
-           toValue: -100, // Adjust this value based on your text width
-           duration: 8000, // Adjust duration for speed
-           useNativeDriver: true,
-         })
-       ).start();
-     };
-
-     if (!loading) {
-       startMarquee();
-     }
-   }, [loading]);
 
   return (
     <ScrollView
@@ -205,7 +164,10 @@ const Home = () => {
 
       {/* Grid Items */}
       <View style={styles.gridContainer}>
-        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={handleNavigation}
+        >
           <Text style={styles.gridText}>Trucks</Text>
           <Image
             style={styles.iconImage}
@@ -213,7 +175,10 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={handleNavigation}
+        >
           <Text style={styles.gridText}>2 Wheeler</Text>
           <Image
             style={styles.iconImage}
@@ -221,7 +186,10 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={handleNavigation}
+        >
           <Text style={styles.gridText}>Packers & Movers</Text>
           <Image
             style={styles.iconImagepack}
@@ -229,7 +197,10 @@ const Home = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gridItem} onPress={handleNavigation}>
+        <TouchableOpacity
+          style={styles.gridItem}
+          onPress={handleNavigation}
+        >
           <Text style={styles.gridText}>3 Wheeler</Text>
           <Image
             style={styles.iconImage}
@@ -242,9 +213,7 @@ const Home = () => {
       <View style={styles.announcementContainer}>
         <Text style={styles.announcementTitle}>Announcements</Text>
         <TouchableOpacity style={styles.announcementCard}>
-          <Text style={styles.announcementText}>
-            Introducing ShipEase Enterprise
-          </Text>
+          <Text style={styles.announcementText}>Introducing ShipEase Enterprise</Text>
           <Text style={styles.viewAllText}>View all</Text>
         </TouchableOpacity>
       </View>
