@@ -188,7 +188,7 @@ const Profile = () => {
               <Card style={styles.card}>
                 <View style={styles.option}>
                   <Text style={styles.optionText}>Logout</Text>
-                  <Ionicons name="log-out-outline" size={24} color="#000000" />
+                  <Ionicons name="log-out-outline" size={24} color="red" />
                 </View>
               </Card>
             </TouchableOpacity>

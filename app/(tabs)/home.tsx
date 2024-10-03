@@ -46,12 +46,12 @@ const Home = () => {
   const [userPhone, setUserPhone] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const scrollAnim = useRef(new Animated.Value(0)).current;
-    interface ExtendedLocationGeocodedAddress
-      extends Location.LocationGeocodedAddress {
-      subLocality?: string;
-      neighbourhood?: string;
-      locality?: string;
-    }
+  interface ExtendedLocationGeocodedAddress
+    extends Location.LocationGeocodedAddress {
+    subLocality?: string;
+    neighbourhood?: string;
+    locality?: string;
+  }
 
   const fetchCurrentLocation = async () => {
     setLoading(true);
@@ -183,7 +183,7 @@ const Home = () => {
             </Animated.Text>
           </View>
         )}
-        <Ionicons name="chevron-down" size={24} color="black" />
+
       </View>
 
       {/* Grid Items */}
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   marqueeContainer: {
-    width: "70%",
+    width: "90%",
     overflow: "hidden",
   },
   gridContainer: {

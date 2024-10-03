@@ -19,6 +19,7 @@ import SelectPickupOnMapScreen from "@/components/Screens/Select_location/Select
 import ReceiverDetailsScreen from "@/components/Screens/Select_location/ReceiverDetailsScreen";
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
+import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
 
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -33,12 +34,23 @@ export type RootStackParamList = {
   ChatScreen: undefined;
   DeliveryScreen: undefined;
   RecieverDetails: { location: any };
-  PickupDropScreen: { name: string; address: string; phone: string; };
+  PickupDropScreen: { name: string; address: string; phone: string };
   SelectPickupLocation: undefined;
-  SenderDetailsScreen: { location: any; };
+  SenderDetailsScreen: { location: any };
   SelectPickupOnMapScreen: undefined;
-  ReceiverDetailsScreen: { location: any, name: string; address: string; phone: string; };
-  SelectDropOnMapScreen: { location: any, name: string; address: string; phone: string; };
+  ReceiverDetailsScreen: {
+    location: any;
+    name: string;
+    address: string;
+    phone: string;
+  };
+  SelectDropOnMapScreen: {
+    location: any;
+    name: string;
+    address: string;
+    phone: string;
+  };
+  DeliveryIssuesScreen: undefined;
 };
 
 
@@ -127,6 +139,11 @@ const Index = () => {
             name="SelectDropOnMapScreen"
             component={SelectDropOnMapScreen}
             options={{ headerShown: true, title: "Select Location" }}
+          />
+          <Stack.Screen
+            name="DeliveryIssuesScreen"
+            component={DeliveryIssuesScreen}
+            options={{ headerShown: true, title: "Delivery" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
