@@ -25,8 +25,12 @@ import { jwtDecode } from "jwt-decode";
 // Define the params expected for PickupDropScreen
 type PickupDropScreenParams = {
   name: string | null;
-  address: string;
   phone: string | null;
+  address: {
+    name: string; 
+    latitude: number;
+    longitude: number;
+  };
 };
 
 // Define the navigation prop type
@@ -45,9 +49,14 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false); // For refresh control
   const [userPhone, setUserPhone] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{
+    name: string;
+    latitude: number;
+    longitude: number;
+  } | null>(null); // Add currentLocation to state
   const scrollAnim = useRef(new Animated.Value(0)).current;
-  interface ExtendedLocationGeocodedAddress
-    extends Location.LocationGeocodedAddress {
+
+  interface ExtendedLocationGeocodedAddress extends Location.LocationGeocodedAddress {
     subLocality?: string;
     neighbourhood?: string;
     locality?: string;
@@ -67,24 +76,26 @@ const Home = () => {
       let places = (await Location.reverseGeocodeAsync({
         latitude: coords.latitude,
         longitude: coords.longitude,
-      })) as ExtendedLocationGeocodedAddress[]; // Use the extended type
+      })) as ExtendedLocationGeocodedAddress[];
 
       if (places && places.length > 0) {
         const place = places[0];
 
-        // Log the place object to inspect its properties
-        console.log(place);
-
         const street = place.street || place.name || "";
-        const area = (place as any).subLocality || ""; // Using type assertion to access subLocality
+        const area = (place as any).subLocality || "";
         const city = place.city || place.locality || "";
         const state = place.region || "";
+        const formattedAddress = `${street}, ${area}, ${city}, ${state}`;
 
-        console.log(
-          `Street: ${street}, Area: ${area}, City: ${city}, State: ${state}`
-        );
+        const newLocation = {
+          name: formattedAddress, // Concatenated address parts
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        };
 
-        setAddress(` ${street}, ${area},${city}, ${state}`);
+        setAddress(newLocation.name); // Display the formatted address
+        setCurrentLocation(newLocation); // Set currentLocation state
+        console.log(`Name: ${newLocation.name}, Latitude: ${newLocation.latitude}, Longitude: ${newLocation.longitude}`);
       } else {
         setAddress("Location not found");
       }
@@ -124,17 +135,16 @@ const Home = () => {
 
   const handleNavigation = () => {
     // Ensure navigation only happens if address and userPhone are available
-    if (address && userPhone && userName) {
+    if (currentLocation && userPhone && userName) {
       navigation.navigate("PickupDropScreen", {
         name: userName,
-        address: address,
+        address: currentLocation, // Use currentLocation from state
         phone: userPhone,
       });
     } else {
       Alert.alert("Error", "Failed to get necessary details for navigation.");
     }
   };
-
   const onRefresh = async () => {
     setRefreshing(true);
     await initialize();

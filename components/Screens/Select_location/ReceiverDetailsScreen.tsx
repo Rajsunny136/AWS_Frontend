@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useRoute, useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { createReceiverDetails } from '@/app/api-request/sender_details_api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userCookie } from "@/app/api-request/config";
@@ -9,47 +9,82 @@ import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { jwtDecode } from 'jwt-decode';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { TextInput } from 'react-native-paper'; // Import TextInput from react-native-paper
 
 type ReceiverDetailsScreenRouteProp = RouteProp<RootStackParamList, 'ReceiverDetailsScreen'>;
 type PickupDropScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PickupDropScreen'>;
 
 const ReceiverDetailsScreen = () => {
     const route = useRoute<ReceiverDetailsScreenRouteProp>();
-    const navigation = useNavigation<PickupDropScreenNavigationProp>();  // Properly typed navigation
-    const { location } = route.params;  // Receiving location from MapSelectionScreen
-    const name = route?.params?.name || "Unknown"; // Provide default value if undefined
+    const navigation = useNavigation<PickupDropScreenNavigationProp>();
+    const { location } = route.params;
+    const name = route?.params?.name || "Unknown";
     const address = route?.params?.address || "Fetching current location...";
     const phone = route?.params?.phone || "Unknown";
-    console.log( "Params data",name, address, phone); //
-    const [receiverName, setreceiverName] = useState('');
-    const [receiverMobile, setreceiverMobile] = useState('');
+    console.log("Params data",address);
+    console.log("Location", location);
+    const [receiverName, setReceiverName] = useState('');
+    const [receiverMobile, setReceiverMobile] = useState('');
     const [locationType, setLocationType] = useState('Home');
     const [user_id, setUserId] = useState<string | null>(null);
+    const [distance, setDistance] = useState<number | null>(null); // State to store distance
+
 
     // Fetch the user_id from AsyncStorage on component mount
     useEffect(() => {
-      const initialize = async () => {
-        try {
-          const token = await AsyncStorage.getItem(userCookie);  // Use the correct key for your token
-          if (!token) {
-            throw new Error('Token not found in AsyncStorage');
-          }
+        const initialize = async () => {
+            try {
+                const token = await AsyncStorage.getItem(userCookie);
+                if (!token) {
+                    throw new Error('Token not found in AsyncStorage');
+                }
 
-          const decodedToken: any = jwtDecode(token);
-          const user_id = decodedToken.id;
+                const decodedToken: any = jwtDecode(token);
+                const user_id = decodedToken.id;
 
-          if (user_id) {
-            setUserId(user_id);
-            console.log(`user_id successfully retrieved: ${user_id}`);
-          }
-        } catch (error) {
-          console.error('Failed to retrieve user_id:', error);
-          Alert.alert('Error', 'Failed to retrieve user information.');
-        }
-      };
+                if (user_id) {
+                    setUserId(user_id);
+                    console.log(`user_id successfully retrieved: ${user_id}`);
+                }
+            } catch (error) {
+                console.error('Failed to retrieve user_id:', error);
+                Alert.alert('Error', 'Failed to retrieve user information.');
+            }
+        };
 
-      initialize();
+        initialize();
     }, []);
+
+    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * (Math.PI / 180); // Convert degrees to radians
+        const dLon = (lon2 - lon1) * (Math.PI / 180);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in kilometers
+    };
+
+    // Calculate distance when component mounts
+    useEffect(() => {
+        if (location && address) {
+            const { latitude: lat1, longitude: lon1 } = location;
+
+            // Ensure that address has latitude and longitude, not just a string
+            if (typeof address === 'object' && 'latitude' in address && 'longitude' in address) {
+                const { latitude: lat2, longitude: lon2 } = address;
+
+                const calculatedDistance = calculateDistance(lat1, lon1, lat2, lon2);
+                setDistance(calculatedDistance);
+                console.log(`Distance between location and address: ${calculatedDistance.toFixed(2)} km`);
+            } else {
+                console.error('Address does not contain latitude and longitude');
+                Alert.alert('Error', 'Address data is missing latitude and longitude.');
+            }
+        }
+    }, [location, address]);
 
     // Handle form submission and post data to the backend
     const handleConfirm = async () => {
@@ -62,32 +97,32 @@ const ReceiverDetailsScreen = () => {
             receiver_name: receiverName,
             receiver_phone_number: receiverMobile,
             user_id: user_id,
-            address: location.name,  
+            address: location.name,
             address_type: locationType,
         };
         console.log("senderdata", postData);
 
         try {
-            const response = await createReceiverDetails(postData);  // Call the API
-            console.log('Response from createSenderDetails:', response);
+            const response = await createReceiverDetails(postData); // Call the API
+            // console.log('Response from createSenderDetails:', response);
 
             // Assuming your API returns the data like this
             const receiver_name = response.data.receiver_name;
             const receiver_address = response.data.address;
             const receiver_phone = response.data.receiver_phone_number;
-            console.log(`Receiver details submitted successfully: ${receiver_name}, ${receiver_address}, ${receiver_phone}`);
+            console.log(`Receiver details submitted successfully: ${receiver_name}, ${location}, ${receiver_phone}`);
+            console.log("location",location)
             if (response.error) {
                 Alert.alert('Error', response.error);
             } else {
                 Alert.alert('Success', 'Details submitted successfully!');
-                // navigation.navigate('VehicleTypeScreen', { name, address, phone });  // Properly typed navigation
+                // navigation.navigate('VehicleTypeScreen', { name, address, phone });
             }
         } catch (error) {
             console.error('Error submitting sender details:', error);
             Alert.alert('Error', 'Failed to submit details. Please try again.');
         }
     };
-    
 
     const handleChangeLocation = () => {
         navigation.navigate('SelectDropOnMapScreen' as never);
@@ -111,28 +146,30 @@ const ReceiverDetailsScreen = () => {
                 <View style={styles.locationRow}>
                     <Icon name="location-on" size={24} color="green" />
                     <View style={styles.locationTextContainer}>
-                        <Text style={styles.locationTitle}>{location.name|| 'Selected Location'}</Text>
+                        <Text style={styles.locationTitle}>{location.name || 'Selected Location'}</Text>
                     </View>
                     <TouchableOpacity onPress={handleChangeLocation}>
                         <Text style={styles.changeButton}>Change</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Input for Sender's Name */}
+                {/* Input for Receiver's Name */}
                 <TextInput
-                    style={styles.input}
-                    placeholder="Receiver's Name"
+                    label="Receiver's Name"
+                    mode="outlined"
                     value={receiverName}
-                    onChangeText={setreceiverName}
+                    onChangeText={setReceiverName}
+                    style={styles.input}
                 />
 
-                {/* Input for Sender's Mobile Number */}
+                {/* Input for Receiver's Mobile Number */}
                 <TextInput
-                    style={styles.input}
-                    placeholder="Receiver's Mobile Number"
+                    label="Receiver's Mobile Number"
+                    mode="outlined"
                     keyboardType="phone-pad"
                     value={receiverMobile}
-                    onChangeText={setreceiverMobile}
+                    onChangeText={setReceiverMobile}
+                    style={styles.input}
                 />
 
                 <Text style={styles.saveAsText}>Save as (optional):</Text>
@@ -200,9 +237,6 @@ const ReceiverDetailsScreen = () => {
     );
 };
 
-
-
-
 // Add your styles here
 const styles = StyleSheet.create({
     container: {
@@ -243,20 +277,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     input: {
-        height: 48,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 16,
         marginVertical: 8,
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    checkboxLabel: {
-        marginLeft: 8,
     },
     saveAsText: {
         marginTop: 16,
@@ -283,20 +304,19 @@ const styles = StyleSheet.create({
     },
     selectedButton: {
         backgroundColor: '#2196F3',
-        borderColor: '#2196F3',
     },
     selectedText: {
         color: '#fff',
     },
     confirmButton: {
         backgroundColor: '#2196F3',
-        borderRadius: 8,
-        paddingVertical: 16,
+        padding: 16,
+        borderRadius: 10,
         alignItems: 'center',
     },
     confirmButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '600',
     },
 });
