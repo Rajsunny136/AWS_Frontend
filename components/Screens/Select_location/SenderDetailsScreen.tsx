@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
 import { createSenderDetails } from '@/app/api-request/sender_details_api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,26 +9,27 @@ import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { jwtDecode } from 'jwt-decode';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { TextInput } from 'react-native-paper';
+
 
 type SenderDetailsScreenRouteProp = RouteProp<RootStackParamList, 'SenderDetailsScreen'>;
 type PickupDropScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PickupDropScreen'>;
 
 const SenderDetailsScreen = () => {
     const route = useRoute<SenderDetailsScreenRouteProp>();
-    const navigation = useNavigation<PickupDropScreenNavigationProp>();  // Properly typed navigation
-    const { location } = route.params;  // Receiving location from MapSelectionScreen
+    const navigation = useNavigation<PickupDropScreenNavigationProp>();
+    const { location } = route.params;
 
     const [senderName, setSenderName] = useState('');
     const [senderMobile, setSenderMobile] = useState('');
     const [locationType, setLocationType] = useState('Home');
     const [user_id, setUserId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);  // Added loading state
+    const [loading, setLoading] = useState(false);
 
-    // Fetch the user_id from AsyncStorage on component mount
     useEffect(() => {
       const initialize = async () => {
         try {
-          const token = await AsyncStorage.getItem(userCookie);  // Use the correct key for your token
+          const token = await AsyncStorage.getItem(userCookie);
           if (!token) {
             throw new Error('Token not found in AsyncStorage');
           }
@@ -49,47 +50,51 @@ const SenderDetailsScreen = () => {
       initialize();
     }, []);
 
-    // Handle form submission and post data to the backend
     const handleConfirm = async () => {
         if (!senderName || !senderMobile) {
             Alert.alert('Error', 'Please fill in all required fields.');
             return;
         }
-
-        setLoading(true);  // Start loader
-
+    
+        setLoading(true);
+    
         const postData = {
             sender_name: senderName,
             mobile_number: senderMobile,
             user_id: user_id,
-            address: location.name,  // Assuming location is the address
+            address: location.name,
             address_type: locationType,
         };
-        console.log("senderdata", postData);
-
+    
+        console.log("Sender data:", postData);
+    
         try {
-            const response = await createSenderDetails(postData);  // Call the API
-            console.log('Response from createSenderDetails:', response);
-
-            // Assuming your API returns the data like this
-            const name = response.data.sender_name;
-            const address = response.data.address;
-            const phone = response.data.mobile_number;
-            console.log(`Sender details submitted successfully: ${name}, ${address}, ${phone}`);
+            const response = await createSenderDetails(postData);
+    
             if (response.error) {
+                // Handle API error
+                console.error('API Error:', response.error);
                 Alert.alert('Error', response.error);
+            } else if (response.data) {
+                // Ensure response.data exists
+                const { sender_name, address, mobile_number } = response.data;
+                console.log(`Sender details submitted successfully: ${sender_name}, ${address}, ${mobile_number}`);
+                setLoading(false);
+                navigation.navigate('PickupDropScreen', { name: sender_name, address: location, phone: mobile_number });
             } else {
-                setLoading(false);  // Stop loader
-                navigation.navigate('PickupDropScreen', { name, address, phone });  // Properly typed navigation
+                // Handle unexpected empty response
+                console.error('Unexpected empty response:', response);
+                Alert.alert('Error', 'Unexpected error occurred. Please try again.');
             }
         } catch (error) {
             console.error('Error submitting sender details:', error);
             Alert.alert('Error', 'Failed to submit details. Please try again.');
-            setLoading(false);  // Stop loader in case of error
+        } finally {
+            setLoading(false);
         }
     };
     
-
+    
     const handleChangeLocation = () => {
         navigation.navigate('SelectPickupLocation' as never);
     };
@@ -112,28 +117,30 @@ const SenderDetailsScreen = () => {
                 <View style={styles.locationRow}>
                     <Icon name="location-on" size={24} color="green" />
                     <View style={styles.locationTextContainer}>
-                        <Text style={styles.locationTitle}>{location.name|| 'Selected Location'}</Text>
+                        <Text style={styles.locationTitle}>{location.name || 'Selected Location'}</Text>
                     </View>
                     <TouchableOpacity onPress={handleChangeLocation}>
                         <Text style={styles.changeButton}>Change</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Input for Sender's Name */}
+                {/* Input for Receiver's Name */}
                 <TextInput
-                    style={styles.input}
-                    placeholder="Sender's Name"
+                    label="Receiver's Name"
+                    mode="outlined"
                     value={senderName}
                     onChangeText={setSenderName}
+                    style={styles.input}
                 />
 
-                {/* Input for Sender's Mobile Number */}
+                {/* Input for Receiver's Mobile Number */}
                 <TextInput
-                    style={styles.input}
-                    placeholder="Sender's Mobile Number"
+                    label="Receiver's Mobile Number"
+                    mode="outlined"
                     keyboardType="phone-pad"
                     value={senderMobile}
                     onChangeText={setSenderMobile}
+                    style={styles.input}
                 />
 
                 <Text style={styles.saveAsText}>Save as (optional):</Text>
@@ -201,9 +208,6 @@ const SenderDetailsScreen = () => {
     );
 };
 
-
-
-
 // Add your styles here
 const styles = StyleSheet.create({
     container: {
@@ -244,20 +248,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     input: {
-        height: 48,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 16,
         marginVertical: 8,
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    checkboxLabel: {
-        marginLeft: 8,
     },
     saveAsText: {
         marginTop: 16,
@@ -284,20 +275,19 @@ const styles = StyleSheet.create({
     },
     selectedButton: {
         backgroundColor: '#2196F3',
-        borderColor: '#2196F3',
     },
     selectedText: {
         color: '#fff',
     },
     confirmButton: {
         backgroundColor: '#2196F3',
-        borderRadius: 8,
-        paddingVertical: 16,
+        padding: 16,
+        borderRadius: 10,
         alignItems: 'center',
     },
     confirmButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '600',
     },
 });

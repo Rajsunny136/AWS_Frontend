@@ -34,7 +34,7 @@ export type RootStackParamList = {
   ChatScreen: undefined;
   DeliveryScreen: undefined;
   RecieverDetails: { location: any };
-  PickupDropScreen: { name: string; address: string; phone: string };
+  PickupDropScreen: { name: string; address:any, phone: string; };
   SelectPickupLocation: undefined;
   SenderDetailsScreen: { location: any };
   SelectPickupOnMapScreen: undefined;
