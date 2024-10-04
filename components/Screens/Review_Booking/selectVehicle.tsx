@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Dimensions,
+} from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/app";
+import { Ionicons } from "@expo/vector-icons";
 
 type VehicleSelectionScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -69,61 +77,62 @@ const VehicleSelectionScreen: React.FC = () => {
 
   const handleConfirm = () => {
     if (distance !== null) {
-    //   navigation.navigate("RideConfirmationScreen", { distance });
+      // navigation.navigate("RideConfirmationScreen", { distance });
     } else {
       Alert.alert("Error", "Unable to confirm ride due to missing distance.");
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.cardWrapper}>
       {/* Sender Details */}
-      <View style={styles.detailsContainer}>
-        <Text style={styles.header}>Sender Details</Text>
-        <Text style={styles.detailText}>Name: {name}</Text>
-        <Text style={styles.senderDetailText}>
-          Address: {address?.name || "Not Available"}
-        </Text>
-        <Text style={styles.detailText}>Phone: {phone}</Text>
+      <View style={styles.cardContainer}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="ellipse" size={12} color="green" />
+          <View style={styles.dottedLine} />
+        </View>
+        <View style={styles.detailContainer}>
+          <Text style={styles.nameText}>
+            {name} · {phone}
+          </Text>
+          <Text style={styles.addressText}>
+            {address?.name || "Not Available"}
+          </Text>
+        </View>
       </View>
 
       {/* Receiver Details */}
-      <View style={styles.detailsContainer}>
-        <Text style={styles.header}>Receiver Details</Text>
-        <Text style={styles.detailText}>Receiver: {receiver_name}</Text>
-        <Text style={styles.detailText}>Address: {receiver_address}</Text>
-        <Text style={styles.detailText}>Phone: {receiver_phone}</Text>
+      <View style={styles.cardContainer}>
+        <View style={styles.iconContainer}>
+          <View style={styles.dottedLine} />
+          <Ionicons name="location-sharp" size={12} color="red" />
+        </View>
+        <View style={styles.detailContainer}>
+          <Text style={styles.nameText}>
+            {receiver_name} · {receiver_phone}
+          </Text>
+          <Text style={styles.addressText}>{receiver_address}</Text>
+        </View>
+        <Ionicons
+          name="swap-vertical"
+          size={18}
+          color="gray"
+          style={styles.swapIcon}
+        />
       </View>
 
-      {/* Distance Display */}
-      {distance !== null && (
-        <View style={styles.distanceContainer}>
-          <Text style={styles.distanceText}>
-            Distance: {distance.toFixed(2)} km
-          </Text>
-        </View>
-      )}
-
-      {/* Confirm Button */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-        <Text style={styles.confirmButtonText}>Confirm Ride</Text>
-      </TouchableOpacity>
+      {/* Add/Edit Buttons */}
+      <View style={styles.actionContainer}>
+        <TouchableOpacity style={styles.editButton}>
+          <Ionicons name="pencil" size={16} color="blue" />
+          <Text style={styles.actionText}>EDIT LOCATIONS</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
-
+const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  detailsContainer: {
-    marginBottom: 20,
-    padding: 15,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-  },
   detailText: {
     fontSize: 16,
     fontWeight: "500",
@@ -133,10 +142,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#333", // Darker color for better readability
   },
   confirmButton: {
-    backgroundColor: "#007bff",
-    padding: 10,
+    backgroundColor: "#007bff", // Primary color for the button
+    padding: 15,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 20,
@@ -158,6 +168,70 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 5,
+  },
+  cardWrapper: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 16,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    margin:10
+  },
+  cardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  iconContainer: {
+    alignItems: "center",
+    marginRight: 10,
+  },
+  dottedLine: {
+    height: 30, 
+    borderLeftWidth: 1,
+    borderLeftColor: "gray",
+    borderStyle: "dotted",
+    marginVertical: 5,
+  },
+  dottedLineHidden: {
+    height: 20,
+    marginVertical: 5,
+  },
+  detailContainer: {
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  addressText: {
+    fontSize: 14,
+    color: "gray",
+  },
+  swapIcon: {
+    marginLeft: 10,
+  },
+  actionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  actionText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: "blue",
+    fontWeight: "bold",
   },
 });
 

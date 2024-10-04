@@ -165,7 +165,11 @@ const Index = () => {
             component={BookingSummaryScreen}
             options={{ headerShown: true, title: "Review and Booking" }}
           />
-          <Stack.Screen name="VehicleSelectionScreen" component={VehicleSelectionScreen} />
+          <Stack.Screen
+            name="VehicleSelectionScreen"
+            component={VehicleSelectionScreen}
+            options={{ headerShown: true, title: "Select Vehicle" }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
