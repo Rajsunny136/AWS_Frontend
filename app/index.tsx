@@ -74,8 +74,6 @@ export type RootStackParamList = {
   ReturnProcessScreen: undefined;
   DeliveryChargesScreen:undefined;
   CancelOrderScreen:undefined;
-  ReceiverDetailsScreen: { location: any, name: string; address: string; phone: string; };
-  SelectDropOnMapScreen: { location: any, name: string; address: string; phone: string; };
 };
 
 
@@ -165,6 +163,7 @@ const Index = () => {
             component={SelectDropOnMapScreen}
             options={{ headerShown: true, title: "Select Location" }}
           />
+          <Stack.Screen
             name="DeliveryIssuesScreen"
             component={DeliveryIssuesScreen}
             options={{ headerShown: true, title: "Delivery" }}
@@ -179,7 +178,7 @@ const Index = () => {
             component={VehicleSelectionScreen}
             options={{ headerShown: true, title: "Select Vehicle" }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="ReturnProcessScreen"
             component={ReturnProcessScreen}
             options={{ headerShown: true }}
