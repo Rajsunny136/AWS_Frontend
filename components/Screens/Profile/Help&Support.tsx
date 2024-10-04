@@ -18,7 +18,7 @@ const HelpAndSupport = () => {
   };
 
   const callSupport = () => {
-    Linking.openURL("tel:+91 9441482439"); // Example phone number
+    Linking.openURL("tel:+919441482439"); // Example phone number
   };
 
   return (
@@ -27,17 +27,25 @@ const HelpAndSupport = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>FAQs</Text>
 
-        <TouchableOpacity style={styles.faqItem}>
-          <Text style={styles.faqText}>How do I track my order?</Text>
+        <TouchableOpacity
+          style={styles.faqItem}
+          onPress={() => navigation.navigate("ReturnProcessScreen" as never)} // Navigate to ReturnProcessScreen
+        >
+          <Text style={styles.faqText}>How to Return Product</Text>
           <Ionicons name="chevron-forward-outline" size={20} color="#666" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.faqItem}>
+        <TouchableOpacity
+          style={styles.faqItem}
+          onPress={() => navigation.navigate("DeliveryChargesScreen" as never)} // Navigate to DeliveryChargesScreen
+        >
           <Text style={styles.faqText}>What are the delivery charges?</Text>
           <Ionicons name="chevron-forward-outline" size={20} color="#666" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.faqItem}>
+        <TouchableOpacity style={styles.faqItem}
+          onPress={() => navigation.navigate("CancelOrderScreen" as never)}
+        >
           <Text style={styles.faqText}>How do I cancel my order?</Text>
           <Ionicons name="chevron-forward-outline" size={20} color="#666" />
         </TouchableOpacity>
@@ -100,12 +108,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f9f9f9",
     paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 16,
-    color: "#333",
   },
   section: {
     marginTop: 24,
