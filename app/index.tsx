@@ -74,8 +74,6 @@ export type RootStackParamList = {
   ReturnProcessScreen: undefined;
   DeliveryChargesScreen:undefined;
   CancelOrderScreen:undefined;
-  ReceiverDetailsScreen: { location: any, name: string; address: string; phone: string; };
-  SelectDropOnMapScreen: { location: any, name: string; address: string; phone: string; };
 };
 
 
