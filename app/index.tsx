@@ -19,12 +19,15 @@ import SelectPickupOnMapScreen from "@/components/Screens/Select_location/Select
 import ReceiverDetailsScreen from "@/components/Screens/Select_location/ReceiverDetailsScreen";
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
+
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
 import BookingSummaryScreen from "@/components/Screens/Review_Booking/ReviewandBooking";
 import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVehicle";
-import * as Location from 'expo-location';
 
-
+ import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
+import DeliveryChargesScreen from "@/components/Screens/Profile/Faqquries/deliverychargeslist"
+import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist"
+        
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
   Login: { phone: string; user_id: any };
@@ -42,6 +45,7 @@ export type RootStackParamList = {
   SelectPickupLocation: undefined;
   SenderDetailsScreen: { location: any };
   SelectPickupOnMapScreen: undefined;
+
   ReceiverDetailsScreen: {
     location: any;
     name: string;
@@ -66,6 +70,12 @@ export type RootStackParamList = {
     phone: string;
     address: any;
   };
+
+  ReturnProcessScreen: undefined;
+  DeliveryChargesScreen:undefined;
+  CancelOrderScreen:undefined;
+  ReceiverDetailsScreen: { location: any, name: string; address: string; phone: string; };
+  SelectDropOnMapScreen: { location: any, name: string; address: string; phone: string; };
 };
 
 
@@ -155,7 +165,6 @@ const Index = () => {
             component={SelectDropOnMapScreen}
             options={{ headerShown: true, title: "Select Location" }}
           />
-          <Stack.Screen
             name="DeliveryIssuesScreen"
             component={DeliveryIssuesScreen}
             options={{ headerShown: true, title: "Delivery" }}
@@ -169,6 +178,21 @@ const Index = () => {
             name="VehicleSelectionScreen"
             component={VehicleSelectionScreen}
             options={{ headerShown: true, title: "Select Vehicle" }}
+          />
+           <Stack.Screen
+            name="ReturnProcessScreen"
+            component={ReturnProcessScreen}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="DeliveryChargesScreen"
+            component={DeliveryChargesScreen}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="CancelOrderScreen"
+            component={CancelOrderScreen}
+            options={{ headerShown: true }}
           />
         </Stack.Navigator>
       </NavigationContainer>
