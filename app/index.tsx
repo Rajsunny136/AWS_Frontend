@@ -20,6 +20,8 @@ import ReceiverDetailsScreen from "@/components/Screens/Select_location/Receiver
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
+import BookingSummaryScreen from "@/components/Screens/Review_Booking/ReviewandBooking";
+import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVehicle";
 
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -34,7 +36,7 @@ export type RootStackParamList = {
   ChatScreen: undefined;
   DeliveryScreen: undefined;
   RecieverDetails: { location: any };
-  PickupDropScreen: { name: string; address:any, phone: string; };
+  PickupDropScreen: { name: string; address: any; phone: string };
   SelectPickupLocation: undefined;
   SenderDetailsScreen: { location: any };
   SelectPickupOnMapScreen: undefined;
@@ -51,6 +53,13 @@ export type RootStackParamList = {
     phone: string;
   };
   DeliveryIssuesScreen: undefined;
+  BookingSummaryScreen: undefined;
+  VehicleSelectionScreen: {
+    receiver_name: string;
+    receiver_address: string;
+    receiver_phone: string;
+    distance: number; // Ensure this is defined
+  };
 };
 
 
@@ -145,6 +154,12 @@ const Index = () => {
             component={DeliveryIssuesScreen}
             options={{ headerShown: true, title: "Delivery" }}
           />
+          <Stack.Screen
+            name="BookingSummaryScreen"
+            component={BookingSummaryScreen}
+            options={{ headerShown: true, title: "Review and Booking" }}
+          />
+          <Stack.Screen name="VehicleSelectionScreen" component={VehicleSelectionScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </>

@@ -116,7 +116,14 @@ const ReceiverDetailsScreen = () => {
                 Alert.alert('Error', response.error);
             } else {
                 Alert.alert('Success', 'Details submitted successfully!');
-                // navigation.navigate('VehicleTypeScreen', { name, address, phone });
+               navigation.navigate(
+                 "VehicleSelectionScreen",
+                 {
+                   receiver_name: receiver_name,
+                   receiver_address: receiver_address,
+                   receiver_phone: receiver_phone,
+                 } as never
+               );
             }
         } catch (error) {
             console.error('Error submitting sender details:', error);
