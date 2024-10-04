@@ -113,18 +113,12 @@ const VehicleSelectionScreen: React.FC = () => {
           </Text>
           <Text style={styles.addressText}>{receiver_address}</Text>
         </View>
-        <Ionicons
-          name="swap-vertical"
-          size={18}
-          color="gray"
-          style={styles.swapIcon}
-        />
       </View>
 
       {/* Add/Edit Buttons */}
       <View style={styles.actionContainer}>
         <TouchableOpacity style={styles.editButton}>
-          <Ionicons name="pencil" size={16} color="blue" />
+          <Ionicons name="pencil" size={16} color="rgb(122, 115, 150)" />
           <Text style={styles.actionText}>EDIT LOCATIONS</Text>
         </TouchableOpacity>
       </View>
@@ -178,7 +172,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    margin:10
+    margin: 10,
   },
   cardContainer: {
     flexDirection: "row",
@@ -190,7 +184,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   dottedLine: {
-    height: 30, 
+    height: 30,
     borderLeftWidth: 1,
     borderLeftColor: "gray",
     borderStyle: "dotted",
@@ -230,7 +224,7 @@ const styles = StyleSheet.create({
   actionText: {
     marginLeft: 5,
     fontSize: 14,
-    color: "blue",
+    color: "rgb(122, 115, 150)",
     fontWeight: "bold",
   },
 });

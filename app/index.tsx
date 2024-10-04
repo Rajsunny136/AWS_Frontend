@@ -178,7 +178,7 @@ const Index = () => {
             component={VehicleSelectionScreen}
             options={{ headerShown: true, title: "Select Vehicle" }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="ReturnProcessScreen"
             component={ReturnProcessScreen}
             options={{ headerShown: true }}
