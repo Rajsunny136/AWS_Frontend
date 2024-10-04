@@ -83,7 +83,10 @@ const HelpAndSupport = () => {
             <Text style={styles.gridText}>Order Tracking</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.gridItem}>
+          <TouchableOpacity
+            style={styles.gridItem}
+            onPress={() => navigation.navigate("DeliveryIssuesScreen" as never)} // Navigate to DeliveryIssuesScreen
+          >
             <Ionicons name="time-outline" size={40} color="#4CAF50" />
             <Text style={styles.gridText}>Delivery Issues</Text>
           </TouchableOpacity>
@@ -93,7 +96,12 @@ const HelpAndSupport = () => {
             <Text style={styles.gridText}>Payment Help</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.gridItem}>
+          <TouchableOpacity
+            style={styles.gridItem}
+            onPress={() =>
+              navigation.navigate("AccountSettingsScreen" as never)
+            }
+          >
             <Ionicons name="settings-outline" size={40} color="#4CAF50" />
             <Text style={styles.gridText}>Account Settings</Text>
           </TouchableOpacity>
