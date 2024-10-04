@@ -165,6 +165,7 @@ const Index = () => {
             component={SelectDropOnMapScreen}
             options={{ headerShown: true, title: "Select Location" }}
           />
+          <Stack.Screen
             name="DeliveryIssuesScreen"
             component={DeliveryIssuesScreen}
             options={{ headerShown: true, title: "Delivery" }}
