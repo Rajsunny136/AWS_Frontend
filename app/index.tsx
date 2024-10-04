@@ -22,6 +22,8 @@ import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScr
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
 import BookingSummaryScreen from "@/components/Screens/Review_Booking/ReviewandBooking";
 import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVehicle";
+import * as Location from 'expo-location';
+
 
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -55,10 +57,14 @@ export type RootStackParamList = {
   DeliveryIssuesScreen: undefined;
   BookingSummaryScreen: undefined;
   VehicleSelectionScreen: {
+    location: any;
     receiver_name: string;
     receiver_address: string;
     receiver_phone: string;
     distance: number; // Ensure this is defined
+    name: any;
+    phone: string;
+    address: any;
   };
 };
 
@@ -159,7 +165,7 @@ const Index = () => {
             component={BookingSummaryScreen}
             options={{ headerShown: true, title: "Review and Booking" }}
           />
-          <Stack.Screen name="VehicleSelectionScreen" component={VehicleSelectionScreen}/>
+          <Stack.Screen name="VehicleSelectionScreen" component={VehicleSelectionScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>

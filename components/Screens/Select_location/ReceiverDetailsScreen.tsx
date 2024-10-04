@@ -118,10 +118,11 @@ const ReceiverDetailsScreen = () => {
                 Alert.alert('Success', 'Details submitted successfully!');
                navigation.navigate(
                  "VehicleSelectionScreen",
-                 {
+                 {name,address,phone,
                    receiver_name: receiver_name,
                    receiver_address: receiver_address,
                    receiver_phone: receiver_phone,
+                   location
                  } as never
                );
             }
