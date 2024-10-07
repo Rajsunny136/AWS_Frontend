@@ -19,10 +19,12 @@ import ReceiverDetailsScreen from "@/components/Screens/Select_location/Receiver
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
-import VehicleSelectionScreen from "@/components/Screens/Select_location/VehicleSelectionScreen";
-import BookingSummaryScreen from "@/components/Screens/Select_location/BookingSummaryScreen";
-
-
+import BookingSummaryScreen from "@/components/Screens/Review_Booking/ReviewandBooking";
+import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVehicle";
+import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
+import DeliveryChargesScreen from "@/components/Screens/Profile/Faqquries/deliverychargeslist"
+import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
+        
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
   Login: { phone: string; user_id: any };
@@ -36,10 +38,11 @@ export type RootStackParamList = {
   ChatScreen: undefined;
   DeliveryScreen: undefined;
   RecieverDetails: { location: any };
-  PickupDropScreen: { name: string; address:any, phone: string; };
+  PickupDropScreen: { name: string; address: any; phone: string };
   SelectPickupLocation: undefined;
   SenderDetailsScreen: { location: any };
   SelectPickupOnMapScreen: undefined;
+
   ReceiverDetailsScreen: {
     location: any;
     name: string;
@@ -71,6 +74,10 @@ export type RootStackParamList = {
     phone: string;
     address: any; vehicleId:any; totalPrice: any; vehicleName:any; vehicleImage:any;
   }
+
+  ReturnProcessScreen: undefined;
+  DeliveryChargesScreen:undefined;
+  CancelOrderScreen:undefined;
 };
 
 
@@ -175,6 +182,21 @@ const Index = () => {
             name="BookingSummaryScreen"
             component={BookingSummaryScreen}
             options={{ headerShown: true, title: "Booking Review" }}
+          />
+          <Stack.Screen
+            name="ReturnProcessScreen"
+            component={ReturnProcessScreen}
+            options={{ headerShown: true, title: "Return & Refund" }}
+          />
+          <Stack.Screen
+            name="DeliveryChargesScreen"
+            component={DeliveryChargesScreen}
+            options={{ headerShown: true, title: "Delivery Charges" }}
+          />
+          <Stack.Screen
+            name="CancelOrderScreen"
+            component={CancelOrderScreen}
+            options={{ headerShown: true, title: "Cancel Order" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

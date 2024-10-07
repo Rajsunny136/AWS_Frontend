@@ -1,3 +1,5 @@
+// let env: any = "dev"; // Declare and initialize env before usage
+
 interface Config_Interface {
     API_DOMAIN_URL: string;
     GOOGLE_API_KEY: string;

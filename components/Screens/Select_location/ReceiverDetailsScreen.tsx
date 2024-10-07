@@ -109,7 +109,7 @@ const ReceiverDetailsScreen = () => {
 
             // Assuming your API returns the data like this
             const receiver_name = response.data.receiver_name;
-            const receiver_address = response.data.address;
+           const receiver_address = response.data.address;
             const receiver_phone = response.data.receiver_phone_number;
             console.log(`Receiver details submitted successfully: ${receiver_name}, ${location}, ${receiver_phone}`);
             console.log("location",location)
