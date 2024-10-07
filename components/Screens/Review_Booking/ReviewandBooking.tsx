@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,21 +6,102 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Image,
   Dimensions,
-  Image
 } from "react-native";
 import { Card, Divider, Modal } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons"; // Using Ionicons for icons
+import { useRoute, RouteProp,useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "@/app";
+import { createBooking } from "@/app/api-request/confirmBooking_api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userCookie } from "@/app/api-request/config";
+import { jwtDecode } from "jwt-decode";
+
+// Define the type of route params
+type BookingSummaryScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "BookingSummaryScreen"
+>;
 
 const BookingSummaryScreen = () => {
+  const route = useRoute<BookingSummaryScreenRouteProp>();
+  const navigation = useNavigation();
+
+  // Destructure the route params
+  const {     
+    vehicleId,
+    totalPrice,
+    vehicleName,    // Receive vehicle name
+    vehicleImage,   // Receive vehicle image URL
+    receiver_name,
+    receiver_address,
+    receiver_phone,
+    name,
+    location,
+    address,
+    phone, } = route.params;
+
   const [goodsType, setGoodsType] = useState("General • Loose");
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isAddressModalVisible, setAddressModalVisible] = useState(false); // Modal for address
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const userDetails = async () => {
+    try {
+        const token = await AsyncStorage.getItem(userCookie);
+        if (!token) throw new Error("Token not found in AsyncStorage");
+        const decodedToken: any = jwtDecode(token);
+        const user_id = decodedToken.id;
+        console.log("User_id is ",user_id);
+        setUserId(user_id);
+    } catch (error) {
+        console.error("Failed to decode token or retrieve user info:", error);
+        Alert.alert("Error", "Failed to retrieve user information.");
+    }
+};
+useEffect(() => {
+  // Fetch user details when the component mounts
+  userDetails();
+}, []);
 
   // Function to handle booking
-  const handleBooking = () => {
-    Alert.alert("Booking Confirmed!", "Your booking has been made.");
-  };
+  const handleBooking = async () => {
+    const bookingData = {
+      user_id: userId, // Replace with actual user_id
+      vehicle_id: vehicleId,
+      pickup_address: address.name,
+      dropoff_address: receiver_address,
+      goods_type: goodsType,
+      total_price: totalPrice,
+      sender_name: name,
+      sender_phone: phone,
+      receiver_name: receiver_name,
+      receiver_phone: receiver_phone,
+      vehicle_name: vehicleName,
+      vehicle_image: vehicleImage,
+      status: "pending",
+    };
+    console.log("Booking data",bookingData)
 
+    try {
+      const result = await createBooking(bookingData);
+      // console.log("Params",bookingId: result.bookingId,address,location,totalPrice)
+      
+      if (result && !result.error) {
+        Alert.alert("Booking Confirmed!", "Your booking has been successfully made.");
+        
+      } else {
+        Alert.alert("Booking Failed", result.error || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      Alert.alert("Booking Failed", "Unable to process your booking.");
+    }
+  };
+  const handleViewAddressDetails = () => {
+    setAddressModalVisible(true);
+  };
   // Function to handle changing goods type
   const handleChangeGoodsType = (type: string) => {
     setGoodsType(type);
@@ -33,13 +114,15 @@ const BookingSummaryScreen = () => {
         {/* Vehicle Information */}
         <Card style={styles.card}>
           <View style={styles.vehicleInfo}>
-            <Image
+          <Image
               style={styles.iconImage}
-              source={require("../../../assets/images/Bike.png")}
+              source={{ uri: vehicleImage }} // Use the vehicle image from params
             />
             <View style={styles.vehicleDetails}>
-              <Text style={styles.vehicleTitle}>2 Wheeler</Text>
-              <Text style={styles.linkText}>View Address Details</Text>
+              <Text style={styles.vehicleTitle}>{vehicleName}</Text>
+              <TouchableOpacity onPress={handleViewAddressDetails}>
+                <Text style={styles.linkText}>View Address Details</Text>
+              </TouchableOpacity>
             </View>
             <Text style={styles.vehicleTime}>1 min away</Text>
           </View>
@@ -69,7 +152,7 @@ const BookingSummaryScreen = () => {
           <Text style={styles.sectionTitle}>Fare Summary</Text>
           <View style={styles.fareItem}>
             <Text>Trip Fare (incl. Toll)</Text>
-            <Text>₹74.68</Text>
+            <Text>₹{totalPrice}</Text>
           </View>
           <View style={styles.fareItem}>
             <Text>Coupon Discount - 15OFF</Text>
@@ -78,11 +161,11 @@ const BookingSummaryScreen = () => {
           <Divider />
           <View style={styles.fareItem}>
             <Text>Net Fare</Text>
-            <Text>₹60</Text>
+            <Text>₹{totalPrice}</Text>
           </View>
           <View style={styles.fareItem}>
             <Text>Amount Payable (rounded)</Text>
-            <Text>₹60</Text>
+            <Text>₹{totalPrice}</Text>
           </View>
         </Card>
 
@@ -101,10 +184,10 @@ const BookingSummaryScreen = () => {
         <View style={styles.paymentContainer}>
           <View style={styles.paymentMethod}>
             <Ionicons name="cash" size={24} color="#000" />
-            <Text style={styles.paymentText}>Cash</Text>
+            <Text style={styles.paymentText}>{totalPrice}</Text>
           </View>
           <View style={styles.paymentAmount}>
-            <Text>₹60</Text>
+            <Text>₹{totalPrice}</Text>
             <Text style={styles.viewBreakup}>View Breakup</Text>
           </View>
         </View>
@@ -112,7 +195,7 @@ const BookingSummaryScreen = () => {
 
       {/* Fixed Book Button at the bottom */}
       <TouchableOpacity style={styles.bookButton} onPress={handleBooking}>
-        <Text style={styles.bookButtonText}>Book 2 Wheeler</Text>
+        <Text style={styles.bookButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
 
       {/* Modal for Changing Goods Type */}
@@ -137,6 +220,52 @@ const BookingSummaryScreen = () => {
           <Text style={styles.linkText}>Close</Text>
         </TouchableOpacity>
       </Modal>
+         {/* Modal for Address Details */}
+      <Modal
+        visible={isAddressModalVisible}
+        onDismiss={() => setAddressModalVisible(false)}
+        contentContainerStyle={styles.modal}
+      >
+        
+          {/* Sender Details */}
+          <View style={styles.cardContainer}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="ellipse" size={12} color="green" />
+              <View style={styles.dottedLine} />
+            </View>
+            <View style={styles.detailContainer}>
+              <Text style={styles.nameText}>
+                {name} · {phone}
+              </Text>
+              <Text style={styles.addressText}>
+                {address?.name || "Not Available"}
+              </Text>
+            </View>
+          </View>
+
+          {/* Receiver Details */}
+          <View style={styles.cardContainer}>
+            <View style={styles.iconContainer}>
+              <View style={styles.dottedLine} />
+              <Ionicons name="location-sharp" size={12} color="red" />
+            </View>
+            <View style={styles.detailContainer}>
+              <Text style={styles.nameText}>
+                {receiver_name} · {receiver_phone}
+              </Text>
+              <Text style={styles.addressText}>{receiver_address}</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setAddressModalVisible(false)}
+            style={styles.modalCloseButton}
+          >
+            <Text style={styles.linkText}>Close</Text>
+          </TouchableOpacity>
+        
+      </Modal>
+
     </View>
   );
 };
@@ -286,11 +415,55 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconImage: {
-    width: width * 0.1, // 10% of the screen width
-    height: width * 0.1, // 10% of the screen width
-    resizeMode: "cover",
-    tintColor: "#A487E7",
-    marginHorizontal: width * 0.02,
+    width:50,
+    height: 50,
+    // resizeMode: "cover",
+    // tintColor: "#A487E7",
+    // marginHorizontal: width * 0.02,
+  },
+
+  cardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  iconContainer: {
+    alignItems: "center",
+    marginRight: 10,
+  },
+  dottedLine: {
+    height: 20,
+    borderLeftWidth: 1,
+    borderLeftColor: "gray",
+    borderStyle: "dotted",
+    marginVertical: 5,
+  },
+  detailContainer: {
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  addressText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  actionContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 5,
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginLeft:5,
+    color: "#A487E7",
   },
 });
 

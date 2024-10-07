@@ -22,6 +22,7 @@ const ReceiverDetailsScreen = () => {
     const address = route?.params?.address || "Fetching current location...";
     const phone = route?.params?.phone || "Unknown";
     console.log("Params data",address);
+
     console.log("Location", location);
     const [receiverName, setReceiverName] = useState('');
     const [receiverMobile, setReceiverMobile] = useState('');
@@ -104,7 +105,7 @@ const ReceiverDetailsScreen = () => {
 
         try {
             const response = await createReceiverDetails(postData); // Call the API
-            // console.log('Response from createSenderDetails:', response);
+            console.log('Response from createSenderDetails:', response);
 
             // Assuming your API returns the data like this
             const receiver_name = response.data.receiver_name;
@@ -115,17 +116,15 @@ const ReceiverDetailsScreen = () => {
             if (response.error) {
                 Alert.alert('Error', response.error);
             } else {
-                Alert.alert('Success', 'Details submitted successfully!');
-               navigation.navigate(
-                 "VehicleSelectionScreen",
-                 {name,address,phone,
-                   receiver_name: receiver_name,
-                   receiver_address: receiver_address,
-                   receiver_phone: receiver_phone,
-                   location
-                 } as never
-               );
-            }
+                navigation.navigate(
+                    "VehicleSelectionScreen",
+                    {name,address,phone,
+                      receiver_name: receiver_name,
+                      receiver_address: receiver_address,
+                      receiver_phone: receiver_phone,
+                      location
+                    } as never
+                  );}
         } catch (error) {
             console.error('Error submitting sender details:', error);
             Alert.alert('Error', 'Failed to submit details. Please try again.');

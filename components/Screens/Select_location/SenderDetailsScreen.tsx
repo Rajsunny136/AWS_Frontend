@@ -124,18 +124,18 @@ const SenderDetailsScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Input for Receiver's Name */}
+                {/* Input for Sender's Name */}
                 <TextInput
-                    label="Receiver's Name"
+                    label="Sender's Name"
                     mode="outlined"
                     value={senderName}
                     onChangeText={setSenderName}
                     style={styles.input}
                 />
 
-                {/* Input for Receiver's Mobile Number */}
+                {/* Input for Sender's Mobile Number */}
                 <TextInput
-                    label="Receiver's Mobile Number"
+                    label="Sender's Mobile Number"
                     mode="outlined"
                     keyboardType="phone-pad"
                     value={senderMobile}

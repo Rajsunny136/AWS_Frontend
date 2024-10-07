@@ -12,21 +12,18 @@ import SavedAddressesScreen from "@/components/Screens/Profile/SavedAddress";
 import NewAddress from "@/components/Screens/Profile/Add_Address";
 import Chooseonmap from "@/components/Screens/Profile/Choose_on_Map";
 import ChatScreen from "@/components/Screens/Profile/Live_chat";
-
 import SelectPickupLocation from "@/components/Screens/Select_location/SelectPickupLocation";
 import SenderDetailsScreen from "@/components/Screens/Select_location/SenderDetailsScreen";
 import SelectPickupOnMapScreen from "@/components/Screens/Select_location/SelectPickupOnMapScreen";
 import ReceiverDetailsScreen from "@/components/Screens/Select_location/ReceiverDetailsScreen";
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
-
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
 import BookingSummaryScreen from "@/components/Screens/Review_Booking/ReviewandBooking";
 import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVehicle";
-
- import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
+import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
 import DeliveryChargesScreen from "@/components/Screens/Profile/Faqquries/deliverychargeslist"
-import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist"
+import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
         
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -59,22 +56,30 @@ export type RootStackParamList = {
     phone: string;
   };
   DeliveryIssuesScreen: undefined;
-  BookingSummaryScreen: undefined;
   VehicleSelectionScreen: {
     location: any;
     receiver_name: string;
     receiver_address: string;
     receiver_phone: string;
-    distance: number; // Ensure this is defined
     name: any;
     phone: string;
     address: any;
   };
+  BookingSummaryScreen: {
+    location: any;
+    receiver_name: string;
+    receiver_address: string;
+    receiver_phone: string;
+    name: any;
+    phone: string;
+    address: any; vehicleId:any; totalPrice: any; vehicleName:any; vehicleImage:any;
+  }
 
   ReturnProcessScreen: undefined;
   DeliveryChargesScreen:undefined;
   CancelOrderScreen:undefined;
 };
+
 
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -169,29 +174,29 @@ const Index = () => {
             options={{ headerShown: true, title: "Delivery" }}
           />
           <Stack.Screen
-            name="BookingSummaryScreen"
-            component={BookingSummaryScreen}
-            options={{ headerShown: true, title: "Review and Booking" }}
-          />
-          <Stack.Screen
             name="VehicleSelectionScreen"
             component={VehicleSelectionScreen}
-            options={{ headerShown: true, title: "Select Vehicle" }}
+            options={{ headerShown: true, title: "Vehicle Selection" }}
+          />
+          <Stack.Screen
+            name="BookingSummaryScreen"
+            component={BookingSummaryScreen}
+            options={{ headerShown: true, title: "Booking Review" }}
           />
           <Stack.Screen
             name="ReturnProcessScreen"
             component={ReturnProcessScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, title: "Return & Refund" }}
           />
           <Stack.Screen
             name="DeliveryChargesScreen"
             component={DeliveryChargesScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, title: "Delivery Charges" }}
           />
           <Stack.Screen
             name="CancelOrderScreen"
             component={CancelOrderScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, title: "Cancel Order" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
