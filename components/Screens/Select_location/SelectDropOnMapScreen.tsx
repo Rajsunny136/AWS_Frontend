@@ -98,7 +98,13 @@ const SelectDropOnMapScreen = () => {
 
   const handleConfirmLocation = () => {
     console.log('Confirmed Location address:', address);
-    navigation.navigate('ReceiverDetailsScreen', { location: { name: address, latitude: selectedLocation?.latitude || 0,  longitude: selectedLocation?.longitude || 0,  },});
+    navigation.navigate('ReceiverDetailsScreen', {
+        location: {
+            name: address,
+            latitude: selectedLocation?.latitude || 0, // Default to 0 if null
+            longitude: selectedLocation?.longitude || 0, // Default to 0 if null
+        },
+    }as never);
 };
 
 
@@ -121,7 +127,7 @@ const SelectDropOnMapScreen = () => {
       )}
 
       <View style={styles.card}>
-        <Text style={styles.title}>Your goods will be deliver from here</Text>
+        <Text style={styles.title}>Your goods will be picked from here</Text>
         <Text style={styles.locationTitle}>{locationTitle}</Text>
         <Text style={styles.address}>{address}</Text>
         <Button title="Confirm Pickup Location" onPress={handleConfirmLocation} />

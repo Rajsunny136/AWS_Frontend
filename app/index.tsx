@@ -12,7 +12,6 @@ import SavedAddressesScreen from "@/components/Screens/Profile/SavedAddress";
 import NewAddress from "@/components/Screens/Profile/Add_Address";
 import Chooseonmap from "@/components/Screens/Profile/Choose_on_Map";
 import ChatScreen from "@/components/Screens/Profile/Live_chat";
-
 import SelectPickupLocation from "@/components/Screens/Select_location/SelectPickupLocation";
 import SenderDetailsScreen from "@/components/Screens/Select_location/SenderDetailsScreen";
 import SelectPickupOnMapScreen from "@/components/Screens/Select_location/SelectPickupOnMapScreen";
@@ -20,6 +19,9 @@ import ReceiverDetailsScreen from "@/components/Screens/Select_location/Receiver
 import SelectDropOnMapScreen from "@/components/Screens/Select_location/SelectDropOnMapScreen";
 import PickupDropScreen from "@/components/Screens/Select_location/PickupDropScreen";
 import DeliveryIssuesScreen from "@/components/Screens/Profile/Delivery_Issues";
+import VehicleSelectionScreen from "@/components/Screens/Select_location/VehicleSelectionScreen";
+import BookingSummaryScreen from "@/components/Screens/Select_location/BookingSummaryScreen";
+
 
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -51,7 +53,26 @@ export type RootStackParamList = {
     phone: string;
   };
   DeliveryIssuesScreen: undefined;
+  VehicleSelectionScreen: {
+    location: any;
+    receiver_name: string;
+    receiver_address: string;
+    receiver_phone: string;
+    name: any;
+    phone: string;
+    address: any;
+  };
+  BookingSummaryScreen: {
+    location: any;
+    receiver_name: string;
+    receiver_address: string;
+    receiver_phone: string;
+    name: any;
+    phone: string;
+    address: any; vehicleId:any; totalPrice: any; vehicleName:any; vehicleImage:any;
+  }
 };
+
 
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -144,6 +165,16 @@ const Index = () => {
             name="DeliveryIssuesScreen"
             component={DeliveryIssuesScreen}
             options={{ headerShown: true, title: "Delivery" }}
+          />
+          <Stack.Screen
+            name="VehicleSelectionScreen"
+            component={VehicleSelectionScreen}
+            options={{ headerShown: true, title: "Vehicle Selection" }}
+          />
+          <Stack.Screen
+            name="BookingSummaryScreen"
+            component={BookingSummaryScreen}
+            options={{ headerShown: true, title: "Booking Review" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

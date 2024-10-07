@@ -24,7 +24,6 @@ export const createSenderDetails = async (data:any) => {
             },
             data: newData,
         });
-        console.log('Response from API:', response); // Log the full response
         return response.data;
     } catch (error: any) {
         console.error('Error in createSenderDetails:', error.message);
@@ -56,10 +55,28 @@ export const createReceiverDetails = async (data: any) => {
             data: newData,
         });
 
-        console.log('Response from API:', response); // Log the full response
         return response.data;
     } catch (error: any) {
         console.error('Error in createReceiverDetails:', error.message);
+        console.log('Error response:', error.response); // Log the error response
+        return { error: error.response?.data?.message || 'An unknown error occurred' };
+    }
+};
+
+
+export const fetchVehiclePrices = async (distance: number) => {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: `${origin}/api/v1/vehicle-type/calculate-prices`, // Replace with your actual backend URL
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify({ distance }), // Send distance in the request body
+        });
+        return response.data; // Return the response data (vehicle prices)
+    } catch (error: any) {
+        console.error('Error in fetchVehiclePrices:', error.message);
         console.log('Error response:', error.response); // Log the error response
         return { error: error.response?.data?.message || 'An unknown error occurred' };
     }
