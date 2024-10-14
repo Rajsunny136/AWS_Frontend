@@ -17,88 +17,119 @@ import { createBooking } from "@/app/api-request/confirmBooking_api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userCookie } from "@/app/api-request/config";
 import { jwtDecode } from "jwt-decode";
+import { StackNavigationProp } from "@react-navigation/stack";
 
-// Define the type of route params
 type BookingSummaryScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "BookingSummaryScreen"
+>;
+
+// Define the type of navigation prop
+type BookingSummaryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "BookingSummaryScreen"
 >;
 
 const BookingSummaryScreen = () => {
   const route = useRoute<BookingSummaryScreenRouteProp>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<BookingSummaryScreenNavigationProp>();
 
   // Destructure the route params
-  const {     
+  const {
     vehicleId,
     totalPrice,
-    vehicleName,    // Receive vehicle name
-    vehicleImage,   // Receive vehicle image URL
+    vehicleName, // Receive vehicle name
+    vehicleImage, // Receive vehicle image URL
     receiver_name,
     receiver_address,
     receiver_phone,
     name,
     location,
     address,
-    phone, } = route.params;
+    phone,
+  } = route.params;
 
   const [goodsType, setGoodsType] = useState("General • Loose");
   const [isModalVisible, setModalVisible] = useState(false);
-  const [isAddressModalVisible, setAddressModalVisible] = useState(false); // Modal for address
+  const [isAddressModalVisible, setAddressModalVisible] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+
+  
 
   const userDetails = async () => {
     try {
-        const token = await AsyncStorage.getItem(userCookie);
-        if (!token) throw new Error("Token not found in AsyncStorage");
-        const decodedToken: any = jwtDecode(token);
-        const user_id = decodedToken.id;
-        console.log("User_id is ",user_id);
-        setUserId(user_id);
+      const token = await AsyncStorage.getItem(userCookie);
+      if (!token) throw new Error("Token not found in AsyncStorage");
+      const decodedToken: any = jwtDecode(token);
+      const user_id = decodedToken.id;
+      console.log("User_id is ", user_id);
+      setUserId(user_id);
     } catch (error) {
-        console.error("Failed to decode token or retrieve user info:", error);
-        Alert.alert("Error", "Failed to retrieve user information.");
-    }
-};
-useEffect(() => {
-  // Fetch user details when the component mounts
-  userDetails();
-}, []);
-
-  // Function to handle booking
-  const handleBooking = async () => {
-    const bookingData = {
-      user_id: userId, // Replace with actual user_id
-      vehicle_id: vehicleId,
-      pickup_address: address.name,
-      dropoff_address: receiver_address,
-      goods_type: goodsType,
-      total_price: totalPrice,
-      sender_name: name,
-      sender_phone: phone,
-      receiver_name: receiver_name,
-      receiver_phone: receiver_phone,
-      vehicle_name: vehicleName,
-      vehicle_image: vehicleImage,
-      status: "pending",
-    };
-    console.log("Booking data",bookingData)
-
-    try {
-      const result = await createBooking(bookingData);
-      // console.log("Params",bookingId: result.bookingId,address,location,totalPrice)
-      
-      if (result && !result.error) {
-        Alert.alert("Booking Confirmed!", "Your booking has been successfully made.");
-        
-      } else {
-        Alert.alert("Booking Failed", result.error || "Something went wrong.");
-      }
-    } catch (error) {
-      console.error("Error submitting booking:", error);
-      Alert.alert("Booking Failed", "Unable to process your booking.");
+      console.error("Failed to decode token or retrieve user info:", error);
+      Alert.alert("Error", "Failed to retrieve user information.");
     }
   };
+  useEffect(() => {
+    // Fetch user details when the component mounts
+    userDetails();
+  }, []);
+
+ const handleBooking = async () => {
+   const bookingData = {
+     user_id: userId,
+     vehicle_id: vehicleId,
+     pickup_address: address.name,
+     dropoff_address: receiver_address,
+     goods_type: goodsType,
+     total_price: totalPrice,
+     sender_name: name,
+     sender_phone: phone,
+     receiver_name: receiver_name,
+     receiver_phone: receiver_phone,
+     vehicle_name: vehicleName,
+     vehicle_image: vehicleImage,
+     status: "pending",
+   };
+
+   console.log("Booking data", bookingData);
+
+   try {
+     const result = await createBooking(bookingData);
+     console.log("Booking creation result:", result);
+
+     // Accessing the booking id correctly
+     const bookingId = result.data.id; // Get the booking ID from the response
+
+     if (result && bookingId) {
+      //  Alert.alert(
+      //    "Booking Confirmed!",
+      //    "Your booking has been successfully made."
+      //  );
+       console.log("Navigating to SearchingForDriverScreen with params:", {
+         bookingId: bookingId.toString(),
+         address,
+         location,
+         totalPrice,
+         vehicleName,
+       });
+       navigation.navigate("SearchingForDriverScreen", {
+         bookingId: bookingId.toString(),
+         address,
+         location,
+         totalPrice,
+         vehicleName,
+       });
+     } else {
+       Alert.alert("Booking Failed", result.message || "Something went wrong.");
+     }
+   } catch (error) {
+     console.error("Error submitting booking:", error);
+     Alert.alert("Booking Failed", "Unable to process your booking.");
+   }
+ };
+
+
+
   const handleViewAddressDetails = () => {
     setAddressModalVisible(true);
   };
