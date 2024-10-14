@@ -24,6 +24,7 @@ import VehicleSelectionScreen from "@/components/Screens/Review_Booking/selectVe
 import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
 import DeliveryChargesScreen from "@/components/Screens/Profile/Faqquries/deliverychargeslist"
 import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
+import SearchingForDriverScreen from "@/components/Screens/Review_Booking/SearchingForDriverScreen ";
         
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -78,6 +79,13 @@ export type RootStackParamList = {
   ReturnProcessScreen: undefined;
   DeliveryChargesScreen:undefined;
   CancelOrderScreen:undefined;
+  SearchingForDriverScreen: {
+    bookingId: string; // Ensure these types are correct
+    address: string;
+    location: string;
+    totalPrice: number;
+    vehicleName: string;
+  };
 };
 
 
@@ -197,6 +205,11 @@ const Index = () => {
             name="CancelOrderScreen"
             component={CancelOrderScreen}
             options={{ headerShown: true, title: "Cancel Order" }}
+          />
+          <Stack.Screen
+            name="SearchingForDriverScreen"
+            component={SearchingForDriverScreen}
+            options={{ headerShown: false, title: "Searching For Driver" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
