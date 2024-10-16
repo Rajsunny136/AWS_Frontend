@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -8,6 +8,8 @@ import {
   Image,
   ActivityIndicator,
   Dimensions,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { Text, Button, Card, TextInput } from "react-native-paper";
 import { getUserById, updateUserById } from "../api-request/user_api";
@@ -29,41 +31,40 @@ const Profile = () => {
   const [phone, setPhone] = useState("");
   const [user_id, setUser_id] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const token = await AsyncStorage.getItem(userCookie);
-        if (!token) {
-          throw new Error("Token not found in AsyncStorage");
-        }
-
-        const decodedToken: any = jwtDecode(token);
-        const user_id = decodedToken.id;
-        setUser_id(user_id);
-        console.log(`UserID: ${user_id}`)
-
-        const userData = await getUserById(user_id);
-        console.log("User Data:", userData);
-        setUser(userData);
-
-        const [first, last] = userData.username.split(" ");
-        setFirstName(first);
-        setLastName(last);
-        setEmail(userData.email);
-        setPassword(userData.password);
-        setGender(userData.gender);
-        setPhone(userData.phone);
-
-        console.log("Fetched User:", userData);
-      } catch (error) {
-        console.error("Failed to initialize user profile:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     initialize();
+  }, []);
+
+  const initialize = async () => {
+    try {
+      const token = await AsyncStorage.getItem(userCookie);
+      if (!token) throw new Error("Token not found in AsyncStorage");
+
+      const decodedToken: any = jwtDecode(token);
+      const user_id = decodedToken.id;
+      setUser_id(user_id);
+      const userData = await getUserById(user_id);
+      setUser(userData);
+
+      const [first, last] = userData.username.split(" ");
+      setFirstName(first);
+      setLastName(last);
+      setEmail(userData.email);
+      setPassword(userData.password);
+      setGender(userData.gender);
+      setPhone(userData.phone);
+    } catch (error) {
+      console.error("Failed to initialize user profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    initialize().finally(() => setRefreshing(false));
   }, []);
 
   const handleUpdate = async () => {
@@ -76,10 +77,8 @@ const Profile = () => {
         gender,
         mobile_number: phone,
       };
-      console.log("Updated User Data:", updatedData);
       if (user_id) {
-        const response = await updateUserById(user_id, updatedData);
-        console.log("Update Response:", response);
+        await updateUserById(user_id, updatedData);
         Alert.alert("Success", "User details updated successfully.");
         setModalVisible(false);
         const updatedUser = await getUserById(user_id);
@@ -92,12 +91,10 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      console.log("Logout button pressed");
-      await AsyncStorage.removeItem(userCookie); // Clear user token from AsyncStorage
+      await AsyncStorage.removeItem(userCookie);
       Alert.alert("Logged out", "You have been logged out successfully.");
-      navigation.navigate("Login" as never); // Navigate to Login screen
+      navigation.navigate("Login" as never);
     } catch (error) {
-      console.error("Failed to log out:", error);
       Alert.alert("Error", "Failed to log out. Please try again.");
     }
   };
@@ -111,155 +108,164 @@ const Profile = () => {
   }
 
   return (
+
     <>
-      <View style={styles.container}>
-        {user && (
-          <>
-            <Card style={styles.headerCard}>
-              <Card.Content style={styles.headerContent}>
-                <View style={styles.profileContainer}>
-                  <Image
-                    source={{ uri: user.profile_image || "default_image_url" }} // Add default image URL if needed
-                    style={styles.profileImage}
-                  />
-                  <View style={styles.userInfo}>
-                    <Text style={styles.headerText}>{user.username}</Text>
-                    <Text style={styles.headerSubText}>{user.phone}</Text>
-                    <Text style={styles.headerSubText}>{user.email}</Text>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View>
+          {user && (
+            <>
+              <Card style={styles.headerCard}>
+                <Card.Content style={styles.headerContent}>
+                  <View style={styles.profileContainer}>
+                    <Image
+                      source={{ uri: user.profile_image || "default_image_url" }} // Add default image URL if needed
+                      style={styles.profileImage}
+                    />
+                    <View style={styles.userInfo}>
+                      <Text style={styles.headerText}>{user.username}</Text>
+                      <Text style={styles.headerSubText}>{user.phone}</Text>
+                      <Text style={styles.headerSubText}>{user.email}</Text>
+                    </View>
                   </View>
-                </View>
-                <TouchableOpacity
-                  // style={styles.option}
-                  onPress={() => setModalVisible(true)}
-                >
-                  <Text style={styles.optionTextedit}>
-                    Edit Profile{" "}
-                    <Ionicons name="chevron-forward" size={12} color="black" />
-                  </Text>
-                </TouchableOpacity>
-              </Card.Content>
-            </Card>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("SavedAddressesScreen" as never)
-              }
-            >
-              <Card style={styles.card}>
-                <View style={styles.option}>
-                  <Text style={styles.optionText}>Saved Addresses</Text>
-                  <Ionicons name="home-outline" size={24} color="#000000" />
-                </View>
+                  <TouchableOpacity
+                    // style={styles.option}
+                    onPress={() => setModalVisible(true)}
+                  >
+                    <Text style={styles.optionTextedit}>
+                      Edit Profile{" "}
+                      <Ionicons name="chevron-forward" size={12} color="black" />
+                    </Text>
+                  </TouchableOpacity>
+                </Card.Content>
               </Card>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("SavedAddressesScreen" as never)
+                }
+              >
+                <Card style={styles.card}>
+                  <View style={styles.option}>
+                    <Text style={styles.optionText}>Saved Addresses</Text>
+                    <Ionicons name="home-outline" size={24} color="#000000" />
+                  </View>
+                </Card>
+              </TouchableOpacity>
 
-            {/* Help & Support */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate("HelpAndSupport" as never)}
-            >
-              <Card style={styles.card}>
-                <View style={styles.option}>
-                  <Text style={styles.optionText}>Help & Support</Text>
-                  <Ionicons
-                    name="chatbubble-outline"
-                    size={24}
-                    color="#000000"
-                  />
-                </View>
-              </Card>
-            </TouchableOpacity>
+              {/* Help & Support */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("HelpAndSupport" as never)}
+              >
+                <Card style={styles.card}>
+                  <View style={styles.option}>
+                    <Text style={styles.optionText}>Help & Support</Text>
+                    <Ionicons
+                      name="chatbubble-outline"
+                      size={24}
+                      color="#000000"
+                    />
+                  </View>
+                </Card>
+              </TouchableOpacity>
 
-            {/* Refer your friends */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate("ReferYourFriends" as never)}
-            >
-              <Card style={styles.card}>
-                <View style={styles.option}>
-                  <Text style={styles.optionText}>Refer your friends!</Text>
-                  <Ionicons
-                    name="share-social-outline"
-                    size={24}
-                    color="#000000"
-                  />
-                </View>
-              </Card>
-            </TouchableOpacity>
+              {/* Refer your friends */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ReferYourFriends" as never)}
+              >
+                <Card style={styles.card}>
+                  <View style={styles.option}>
+                    <Text style={styles.optionText}>Refer your friends!</Text>
+                    <Ionicons
+                      name="share-social-outline"
+                      size={24}
+                      color="#000000"
+                    />
+                  </View>
+                </Card>
+              </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleLogout}>
-              <Card style={styles.card}>
-                <View style={styles.option}>
-                  <Text style={styles.optionText}>Logout</Text>
-                  <Ionicons name="log-out-outline" size={24} color="red" />
-                </View>
-              </Card>
-            </TouchableOpacity>
-          </>
-        )}
+              <TouchableOpacity onPress={handleLogout}>
+                <Card style={styles.card}>
+                  <View style={styles.option}>
+                    <Text style={styles.optionText}>Logout</Text>
+                    <Ionicons name="log-out-outline" size={24} color="red" />
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </ScrollView>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.ProfileModalContainer}>
-            <View style={styles.ProfileModalContent}>
-              <TextInput
-                style={styles.ProfileInput}
-                label="First Name"
-                value={firstName}
-                onChangeText={setFirstName}
-              />
-              <TextInput
-                style={styles.ProfileInput}
-                label="Last Name"
-                value={lastName}
-                onChangeText={setLastName}
-              />
-              <TextInput
-                style={styles.ProfileInput}
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-              />
-              <TextInput
-                style={styles.ProfileInput}
-                label="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-              <TextInput
-                style={styles.ProfileInput}
-                label="Gender"
-                value={gender}
-                onChangeText={setGender}
-              />
-              <TextInput
-                style={styles.ProfileInput}
-                label="Phone"
-                value={phone}
-                onChangeText={setPhone}
-              />
-              <View style={styles.ProfileButtonContainer}>
-                <Button
-                  mode="contained"
-                  onPress={handleUpdate}
-                  style={styles.ProfileUpdateButton}
-                >
-                  Update
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={() => setModalVisible(false)}
-                  style={styles.ProfileCancelButton}
-                >
-                  Cancel
-                </Button>
-              </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.ProfileModalContainer}>
+          <View style={styles.ProfileModalContent}>
+            <TextInput
+              style={styles.ProfileInput}
+              label="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+            />
+            <TextInput
+              style={styles.ProfileInput}
+              label="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+            />
+            <TextInput
+              style={styles.ProfileInput}
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={styles.ProfileInput}
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.ProfileInput}
+              label="Gender"
+              value={gender}
+              onChangeText={setGender}
+            />
+            <TextInput
+              style={styles.ProfileInput}
+              label="Phone"
+              value={phone}
+              onChangeText={setPhone}
+            />
+            <View style={styles.ProfileButtonContainer}>
+              <Button
+                mode="contained"
+                onPress={handleUpdate}
+                style={styles.ProfileUpdateButton}
+              >
+                Update
+              </Button>
+              <Button
+                mode="contained"
+                onPress={() => setModalVisible(false)}
+                style={styles.ProfileCancelButton}
+              >
+                Cancel
+              </Button>
             </View>
           </View>
-        </Modal>
-      </View>
+        </View>
+      </Modal>
+
     </>
   );
 };

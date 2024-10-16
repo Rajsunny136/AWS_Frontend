@@ -21,6 +21,7 @@ import config from "@/app/api-request/config";
 import axios from "axios";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { jwtDecode } from "jwt-decode";
+import { getUserById } from "../api-request/profile_api";
 
 // Define the params expected for PickupDropScreen
 type PickupDropScreenParams = {
@@ -113,17 +114,22 @@ const Home = () => {
       if (!token) {
         throw new Error("Token not found in AsyncStorage");
       }
+
       const decodedToken: any = jwtDecode(token);
       const user_id = decodedToken.id;
-      const user_phone = decodedToken.phone;
-      const user_name = decodedToken.name;
 
-      setUserPhone(user_phone);
-      setUserName(user_name);
       if (user_id) {
-        setUserId(user_id);
+        const userDetails = await getUserById(user_id); // Fetch user details
+        setUserName(userDetails.username); // Set username
+        setUserPhone(userDetails.phone); // Set phone
+        setUserId(user_id); // Store user_id in state
+
+        console.log(`Username: ${userDetails.username}`);
       }
     } catch (error) {
+      console.error("Error initializing user:", error);
+      Alert.alert("Error", "Failed to load user data");
+    } finally {
       setLoading(false);
     }
   };
