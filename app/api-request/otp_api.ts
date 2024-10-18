@@ -6,35 +6,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const sendUserOTP = async (data: any) => {
     console.log(origin);
     const newData = JSON.stringify(data);
+
     try {
-         
-        const response = await axios({
-            method: 'post',
-            url: `${origin}/api/v1/otp/send-otp`,
-            headers: {
-                "Content-Type": "application/json",
-                
-            },
-            data: newData
+        const response = await axios.post(`${origin}/api/v1/otp/send-otp`, newData, {
+            headers: { "Content-Type": "application/json" },
         });
-        return response.data;
+
+        return response.data; // Return the response data directly if the request succeeds.
 
     } catch (error: any) {
-        console.log(error);
+        console.error('Error in sendUserOTP:', error);
 
         if (error.isAxiosError) {
             if (!error.response) {
-                // Network error: No response received
-                return { error: "Unable to connect to the server. Please Try Again." };
-            } else {
-                // Server error: Response received with a status code out of the 2xx range
-                return {
-                    error: error.response.data?.message || "Server error: Please try again later.",
-                    status: error.response.status,
-                };
+                // Network error: No response received from the server.
+                return { error: "Unable to connect to the server. Please try again." };
             }
+
+            // Server responded but with an error status code (4xx or 5xx)
+            return {
+                error: error.response.data?.error || "Server error: Please try again later.",
+                status: error.response.status,
+            };
         }
-        // Handle unexpected errors
+
+        // Handle any other unexpected errors
         return { error: "Unexpected error: Please try again later." };
     }
 };
