@@ -25,6 +25,7 @@ import ReturnProcessScreen from "@/components/Screens/Profile/Faqquries/cancelor
 import DeliveryChargesScreen from "@/components/Screens/Profile/Faqquries/deliverychargeslist"
 import CancelOrderScreen from "@/components/Screens/Profile/Faqquries/cancelorderlist";
 import SearchingForDriverScreen from "@/components/Screens/Review_Booking/SearchingForDriverScreen ";
+import RideConfirmedScreen from "@/components/Screens/Review_Booking/RideConfirmedScreen";
         
 export type RootStackParamList = {
   Tablayout: { user_id: any; phone: string };
@@ -85,7 +86,13 @@ export type RootStackParamList = {
     location: string;
     totalPrice: number;
     vehicleName: string;
+    sender_name:string,
+    sender_phone: string,
+    receiver_name: string,
+    receiver_phone: string,
+    otp:any,
   };
+RideConfirmedScreen:{status:any, location:any, address:any, otp:any, totalPrice:any}
 };
 
 
@@ -210,6 +217,11 @@ const Index = () => {
             name="SearchingForDriverScreen"
             component={SearchingForDriverScreen}
             options={{ headerShown: false, title: "Searching For Driver" }}
+          />
+          <Stack.Screen
+            name="RideConfirmedScreen"
+            component={RideConfirmedScreen}
+            options={{ headerShown: true, title: "Ride Confirmed" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

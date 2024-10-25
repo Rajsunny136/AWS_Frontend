@@ -12,7 +12,7 @@ import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import MapView, { Marker } from "react-native-maps";
 import config, { userCookie } from "@/app/api-request/config";
-import { io } from "socket.io-client";
+import { io,Socket  } from "socket.io-client";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 
@@ -30,8 +30,8 @@ type address = {
 };
 
 type Driver = {
-  driverId: number;
-  vehicleType: string;
+  driver_id: number;
+  vehicle_type: string;
   latitude: number;
   longitude: number;
 };
@@ -43,6 +43,11 @@ type RootStackParamList = {
     location: Location;
     totalPrice: number;
     vehicleName: string;
+    sender_name: string,
+    sender_phone: string,
+    receiver_name: string,
+    receiver_phone: string,
+    otp: any,
   };
 };
 
@@ -58,17 +63,14 @@ type SearchingForDriverScreenNavigationProp = StackNavigationProp<
 
 const SearchingForDriverScreen = () => {
   const route = useRoute<SearchingForDriverScreenRouteProp>();
-  const { bookingId, address, location, totalPrice, vehicleName } = route.params;
+  const { bookingId, address, location, totalPrice, vehicleName,sender_name,sender_phone,receiver_name,receiver_phone,otp } = route.params;
   const navigation = useNavigation<SearchingForDriverScreenNavigationProp>();
 
   const [countdown, setCountdown] = useState(600);
   const [nearbyDrivers, setNearbyDrivers] = useState<Driver[]>([]);
-  const [driverId, setDriverId] = useState<number | null>(null);
-  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
-  const socket = io(config.SOCKET_IO_URL); // WebSocket connection
+  const [socket, setSocket] = useState<Socket | null>(null); // State for socket connection
   const [currentDriverIndex, setCurrentDriverIndex] = useState(0);
-
 
   // Fetch user ID from token stored in AsyncStorage
   const userDetails = async () => {
@@ -77,7 +79,7 @@ const SearchingForDriverScreen = () => {
       if (!token) throw new Error("Token not found in AsyncStorage");
       const decodedToken: any = jwtDecode(token);
       const user_id = decodedToken.id;
-      console.log("User_id is ", user_id);
+      console.log("User ID decoded from token:", user_id);
       setUserId(user_id); // Set userId state
     } catch (error) {
       console.error("Failed to decode token or retrieve user info:", error);
@@ -90,111 +92,105 @@ const SearchingForDriverScreen = () => {
     userDetails();
   }, []);
 
-  // Socket connection and requesting nearby drivers
+  // Initialize socket connection and log socket ID
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server:", socket.id);
+    const newSocket = io(config.SOCKET_IO_URL);
+
+    // Log socket connection event with the user's socket ID
+    newSocket.on("connect", () => {
+      console.log("Connected to Socket.IO server with ID:", newSocket.id);
     });
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from WebSocket server");
-    });
+    setSocket(newSocket);
 
-    // Emit event to fetch nearby drivers
-    socket.emit("requestNearbyDrivers", {
-      vehicleType: vehicleName,
-      latitude: address.latitude,
-      longitude: address.longitude,
-    });
 
-    // Listen for nearby drivers from the server
-    socket.on("nearbyDrivers", (drivers: Driver[]) => {
-      console.log("Nearby drivers received:", drivers);
-      setNearbyDrivers(drivers);
-
-      // Filter drivers based on vehicle type
-      const filteredDrivers = drivers.filter(
-        (driver) => driver.vehicleType === vehicleName
-      );
-
-      console.log("Filtered drivers based on vehicleType", filteredDrivers)
-
-      // Emit REGISTER_DRIVER event for the first filtered driver
-      if (filteredDrivers.length > 0) {
-        const driverDetails = filteredDrivers[0]; // Get the first filtered driver
-
-        // Emit REGISTER_DRIVER with the details of the first filtered driver
-        socket.emit("REGISTER_DRIVER", {
-          driverId: driverDetails.driverId,
-          vehicleType: driverDetails.vehicleType,
-          latitude: driverDetails.latitude,
-          longitude: driverDetails.longitude,
+    newSocket.on("rideRequestStatus", (status) => {
+      console.log("Ride request status", status);
+      console.log(`Ride request status received from: Socket ID: ${newSocket.id}`);
+      
+      if (status?.status === "accepted") {
+        navigation.navigate("RideConfirmedScreen", {
+          totalPrice:totalPrice,
+          status: status,
+          location: location,
+          address: address,
+          otp: otp,
         });
-
-        console.log("Emitted REGISTER_DRIVER for driver:", driverDetails);
-      } else {
-        console.log("No drivers found with the specified vehicle type.");
       }
     });
-
-    // Listen for ride request status
-    socket.on("rideRequestStatus", (status) => {
-      if (status === "accepted") {
-        Alert.alert("Ride Accepted", "Driver has accepted your ride.");
-        // Navigate to the ride details screen
-        // navigation.navigate("RideDetailsScreen", { bookingId });
-      } else if (status === "rejected") {
-        // Move to the next driver in the list
-        requestNextDriver();
-      }
-    });
-
+    
     return () => {
-      socket.disconnect();
+      console.log("Disconnecting socket with ID:", newSocket.id);
+      newSocket.disconnect(); // Clean up socket when unmounting
     };
-  }, [driverId, vehicleName, address.latitude, address.longitude]);
+  }, []);
 
-  // Request booking from the next available driver
+  // Emit event to fetch nearby drivers and log socket ID
+  useEffect(() => {
+    if (socket) {
+      console.log("Requesting nearby drivers, Socket ID:", socket.id);
+      socket.emit("requestNearbyDrivers", {
+        vehicle_type: vehicleName,
+        latitude: address.latitude,
+        longitude: address.longitude,
+      });
+
+      // Listen for nearby drivers from the server
+      socket.on("nearbyDrivers", (drivers: Driver[]) => {
+        console.log("Nearby drivers received:", drivers, "Socket ID:", socket.id);
+        setNearbyDrivers(drivers);
+      });
+    }
+  }, [socket, vehicleName, address.latitude, address.longitude]);
+
+  // Request booking from the next available driver and log socket ID
   const requestNextDriver = () => {
     const filteredDrivers = nearbyDrivers.filter(
-      (driver) => driver.vehicleType === vehicleName
+      (driver) => driver.vehicle_type === vehicleName
     );
+    console.log("Filtered drivers:", filteredDrivers);
 
     if (filteredDrivers.length > 0 && currentDriverIndex < filteredDrivers.length) {
       const driverToRequest = filteredDrivers[currentDriverIndex];
-      setSelectedDriver(driverToRequest);
       setCurrentDriverIndex(currentDriverIndex + 1); // Move to the next driver
 
-      // Emit ride request to this driver
-      console.log("Requesting booking with driver:", driverToRequest.driverId);
-       // Emit ride request using WebSocket
-       console.log('Emitting booking request:', {
-        bookingId,
-        userId, // This should be the user ID fetched from AsyncStorage
-        driverId: driverToRequest.driverId,
-        pickupAddress: {
-          latitude: address.latitude,
-          longitude: address.longitude,
-        },
-        dropoffAddress: location,
-        totalPrice,
-        vehicleName,
-      });
-      socket.emit("REQUEST_BOOKING", {
-        bookingId,
-        userId,
-        driverId: driverToRequest.driverId,
-        pickupAddress: {
-          latitude: address.latitude,
-          longitude: address.longitude,
-        },
-        dropoffAddress: location,
-        totalPrice,
-        vehicleName,
-      });
+      // Emit ride request to this driver only if socket is connected
+      if (socket) {
+        console.log(
+          "Requesting booking with driver:",
+          driverToRequest.driver_id,
+          "Socket ID:",
+          socket.id
+        );
+        socket.emit("REQUEST_BOOKING", {
+          bookingId: bookingId,
+          userId: userId,
+          driver_id: driverToRequest.driver_id,
+          pickupAddress: {
+            latitude: address.latitude,
+            longitude: address.longitude,
+            name: address.name
+          },
+          dropoffAddress: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            name: location.name
+          },
+          totalPrice: totalPrice,
+          vehicleName: vehicleName,
+          sender_name: sender_name,
+          sender_phone: sender_phone,
+          receiver_name: receiver_name,
+          receiver_phone: receiver_phone,
+          otp: otp, // OTP for security purposes
+        });
+      } else {
+        Alert.alert("Error", "Socket connection is not available.");
+      }
     } else {
       // If no more drivers are available, show an alert
-      Alert.alert("No Drivers Available", "All drivers have rejected the ride.");
+      console.log("No drivers available or all drivers have rejected the ride, Socket ID:", socket?.id);
+      Alert.alert("No Drivers Available", "For selected vehicle.");
     }
   };
 
@@ -282,7 +278,7 @@ const SearchingForDriverScreen = () => {
   {nearbyDrivers.map((driver) => {
     // Set the image source based on the vehicle type
     let vehicleIcon;
-    switch (driver.vehicleType) {
+    switch (driver.vehicle_type) {
       case "Bike":
         vehicleIcon = require('../../../assets/images/bike1.png');
         break;
@@ -301,7 +297,7 @@ const SearchingForDriverScreen = () => {
 
     return (
       <Marker
-        key={driver.driverId}
+        key={driver.driver_id}
         coordinate={{
           latitude: driver.latitude,
           longitude: driver.longitude,
