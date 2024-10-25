@@ -74,7 +74,13 @@ const BookingSummaryScreen = () => {
     userDetails();
   }, []);
 
+    // Function to generate a random 4-digit OTP
+    const generateOTP = () => {
+      return Math.floor(1000 + Math.random() * 9000).toString(); // Generate a random number between 1000 and 9999
+    };
+
  const handleBooking = async () => {
+  const otp = generateOTP();
    const bookingData = {
      user_id: userId,
      vehicle_id: vehicleId,
@@ -111,6 +117,11 @@ const BookingSummaryScreen = () => {
          location,
          totalPrice,
          vehicleName,
+         sender_name: name,
+         sender_phone: phone,
+         receiver_name: receiver_name,
+         receiver_phone: receiver_phone,
+         otp:otp,
        });
        navigation.navigate("SearchingForDriverScreen", {
          bookingId: bookingId.toString(),
@@ -118,6 +129,11 @@ const BookingSummaryScreen = () => {
          location,
          totalPrice,
          vehicleName,
+         sender_name: name,
+         sender_phone: phone,
+         receiver_name: receiver_name,
+         receiver_phone: receiver_phone,
+         otp:otp,
        });
      } else {
        Alert.alert("Booking Failed", result.message || "Something went wrong.");
