@@ -15,8 +15,10 @@ import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { Divider } from "react-native-paper";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/app";
-import { io, Socket } from "socket.io-client";
-import config from "@/app/api-request/config";
+import config, { userCookie } from "@/app/api-request/config";
+import { io,Socket  } from "socket.io-client";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from "jwt-decode";
 
 type RideStatusUpdate = {
   bookingId: string;
@@ -70,6 +72,27 @@ const RideConfirmedScreen = () => {
   const { status, address, location, otp,totalPrice } = route.params;
   const [rideStatus, setRideStatus] = useState<RideStatusUpdate | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+
+    // Fetch user ID from token stored in AsyncStorage
+    const userDetails = async () => {
+      try {
+        const token = await AsyncStorage.getItem(userCookie);
+        if (!token) throw new Error("Token not found in AsyncStorage");
+        const decodedToken: any = jwtDecode(token);
+        const user_id = decodedToken.id;
+        console.log("User ID decoded from token:", user_id);
+        setUserId(user_id); // Set userId state
+      } catch (error) {
+        console.error("Failed to decode token or retrieve user info:", error);
+        Alert.alert("Error", "Failed to retrieve user information.");
+      }
+    };
+  
+    useEffect(() => {
+      // Fetch user details when the component mounts
+      userDetails();
+    }, []);
 
   useEffect(() => {
     const socketInstance: Socket = io(config.SOCKET_IO_URL);
@@ -78,6 +101,12 @@ const RideConfirmedScreen = () => {
     // Ensure connection
     socketInstance.on('connect', () => {
       console.log("Connected to Socket.IO server with ID:", socketInstance.id);
+  
+      // Send socket ID and booking ID to backend
+      socketInstance.emit('associateSocketWithBooking', {
+        bookingId: status.bookingId, // Add bookingId in route params
+        socketId: socketInstance.id
+      });
     });
   
     // Listen for ride status updates
@@ -89,6 +118,11 @@ const RideConfirmedScreen = () => {
           'Ride Started',
           `Your ride with driver ${data.driver_name} (Vehicle: ${data.vehicle_type} - ${data.vehicle_number}) has started.`
         );
+        navigation.navigate("RideStartScreen", {
+          totalPrice,
+          status,
+          location,
+        });
       }
     });
   
@@ -101,6 +135,28 @@ const RideConfirmedScreen = () => {
       socketInstance.disconnect();
     };
   }, []);
+  
+  const handleCancelTrip = () => {
+    if (socket) {
+      socket.emit("cancelTrip", {
+        bookingId: status.bookingId,
+        userId,
+        message: "Trip cancelled",
+      });
+      console.log("Trip cancel event emitted");
+  
+      Alert.alert(
+        "Trip Cancelled",
+        "Your trip has been cancelled.",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Tablayout" as never),
+          },
+        ]
+      );
+    }
+  };
   
 
   const handleCallDriver = () => {
@@ -222,7 +278,7 @@ const RideConfirmedScreen = () => {
         <Text style={styles.paymentType}>CASH RIDE</Text>
       </View>
   
-      <TouchableOpacity style={styles.cancelRideButton}>
+      <TouchableOpacity style={styles.cancelRideButton } onPress={handleCancelTrip}>
         <Text style={styles.cancelRideText}>Cancel Ride</Text>
       </TouchableOpacity>
     </ScrollView>

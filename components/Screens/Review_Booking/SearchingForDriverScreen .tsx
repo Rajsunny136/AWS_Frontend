@@ -49,6 +49,13 @@ type RootStackParamList = {
     receiver_phone: string,
     otp: any,
   };
+  RideConfirmedScreen: {
+    totalPrice: number;
+    status: any;
+    location: Location;
+    address: address;
+    otp: any;
+  };
 };
 
 type SearchingForDriverScreenRouteProp = RouteProp<
@@ -143,6 +150,8 @@ const SearchingForDriverScreen = () => {
     }
   }, [socket, vehicleName, address.latitude, address.longitude]);
 
+ 
+
   // Request booking from the next available driver and log socket ID
   const requestNextDriver = () => {
     const filteredDrivers = nearbyDrivers.filter(
@@ -213,6 +222,22 @@ const SearchingForDriverScreen = () => {
 
     return () => clearInterval(interval);
   }, [countdown]);
+
+  const handleCancelTrip = () => {
+    Alert.alert(
+      "Trip Cancelled",
+      "Your trip has been cancelled.",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.navigate('TabLayoutScreen' as never);  // Navigate to TabLayoutScreen
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* Top Navigation */}
@@ -344,7 +369,7 @@ const SearchingForDriverScreen = () => {
             <TouchableOpacity style={styles.supportButton}>
               <Text style={styles.supportText}>Contact Support</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton}>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancelTrip}>
               <Text style={styles.cancelButtonText}>Cancel Trip</Text>
             </TouchableOpacity>
           </View>
