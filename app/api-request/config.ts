@@ -30,5 +30,5 @@ if (env === "production") {
 
 export default config;
 
-export const origin = env === "production" ? "https://ship.genamplifysol.com" : "http://192.168.125.200:3000";
+export const origin = env === "production" ? "https://ship.genamplifysol.com" : "http://192.168.29.87:4000";
 export const userCookie = "userToken";

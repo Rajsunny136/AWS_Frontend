@@ -21,7 +21,7 @@ import config from "@/app/api-request/config";
 import axios from "axios";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { jwtDecode } from "jwt-decode";
-import { getUserById } from "../api-request/profile_api";
+import { getUserById } from "../api-request/user_api";
 
 // Define the params expected for PickupDropScreen
 type PickupDropScreenParams = {
@@ -257,27 +257,35 @@ const Home = () => {
 };
 
 const { width, height } = Dimensions.get("window");
-const isSmallDevice = width < 375; // Example breakpoint for small devices
+
+// Breakpoints
+const isSmallDevice = width < 375; // Small phones
+const isMediumDevice = width >= 375 && width < 768; // Standard phones
+const isLargeDevice = width >= 768; // Tablets
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    paddingHorizontal: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
+    paddingHorizontal: width * 0.04, // Consistent padding
   },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
-    borderRadius: 10,
-    marginTop: height * 0.02, // Responsive margin
+    padding: width * 0.04,
+    borderRadius: 12,
+    marginTop: height * 0.02,
     justifyContent: "space-between",
     overflow: "hidden",
+    elevation: 3, // Shadow for Android
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   addressText: {
-    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
-    fontWeight: "400",
+    fontSize: width * 0.042, // Auto-scale font
+    fontWeight: "500",
     color: "#333",
   },
   marqueeContainer: {
@@ -288,70 +296,73 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginTop: height * 0.03, // Responsive margin
+    marginTop: height * 0.03,
   },
   gridItem: {
-    width: isSmallDevice ? "100%" : "48%",
+    width: isSmallDevice ? "47%" : isLargeDevice ? "30%" : "48%",
     backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingVertical: isSmallDevice ? height * 0.02 : height * 0.025, // Responsive padding
-    paddingHorizontal: width * 0.04, // Responsive padding
+    borderRadius: 12,
+    paddingVertical: height * 0.025,
+    paddingHorizontal: width * 0.04,
     alignItems: "center",
-    marginBottom: height * 0.02, // Responsive margin
+    marginBottom: height * 0.02,
+    elevation: 3,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
   },
   iconImage: {
-    width: isSmallDevice ? width * 0.15 : width * 0.23, // Responsive width
-    height: isSmallDevice ? height * 0.08 : height * 0.1, // Responsive height
-    marginBottom: height * 0.01, // Responsive margin
+    width: width * 0.2,
+    height: height * 0.1,
+    marginBottom: height * 0.01,
+    resizeMode: "contain",
   },
   iconImagepack: {
-    width: isSmallDevice ? width * 0.1 : width * 0.23, // Responsive width
-    height: isSmallDevice ? height * 0.07 : height * 0.1, // Responsive height
-    marginBottom: height * 0.01, // Responsive margin
+    width: width * 0.15,
+    height: height * 0.09,
+    marginBottom: height * 0.01,
+    resizeMode: "contain",
   },
   gridText: {
-    fontSize: isSmallDevice ? width * 0.03 : width * 0.035, // Responsive font size
+    fontSize: width * 0.04,
     color: "#333",
     fontWeight: "bold",
   },
   announcementContainer: {
-    marginTop: height * 0.03, // Responsive margin
-    padding: width * 0.04, // Responsive padding
+    marginTop: height * 0.03,
+    padding: width * 0.04,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 12,
   },
   announcementTitle: {
-    fontSize: isSmallDevice ? width * 0.04 : width * 0.045, // Responsive font size
+    fontSize: width * 0.045,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: height * 0.02, // Responsive margin
+    marginBottom: height * 0.015,
   },
   announcementCard: {
     backgroundColor: "#f1f1f1",
-    borderRadius: 10,
-    padding: isSmallDevice ? width * 0.03 : width * 0.04, // Responsive padding
+    borderRadius: 12,
+    padding: width * 0.04,
   },
   announcementText: {
-    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
+    fontSize: width * 0.038,
     color: "#333",
   },
   viewAllText: {
     color: "#1e90ff",
-    marginTop: height * 0.01, // Responsive margin
+    marginTop: height * 0.01,
+    fontSize: width * 0.04,
   },
   footer: {
-    paddingVertical: height * 0.02, // Responsive padding
+    paddingVertical: height * 0.02,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f1f1f1",
-    marginTop: height * 0.03, // Responsive margin
+    marginTop: height * 0.03,
   },
   footerText: {
-    fontSize: isSmallDevice ? width * 0.035 : width * 0.04, // Responsive font size
+    fontSize: width * 0.038,
     color: "#666",
   },
 });

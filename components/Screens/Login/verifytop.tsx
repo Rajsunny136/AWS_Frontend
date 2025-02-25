@@ -15,7 +15,7 @@ import { jwtDecode } from "jwt-decode"; // Import jwt-decode to decode the JWT
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/app";
-import { verifyUserOTP, sendUserOTP } from "@/app/api-request/otp_api";
+import { verifyUserOTP,sendUserOTP } from "@/app/api-request/otp_api";
 import { userCookie } from "@/app/api-request/config";
 import Icon from "react-native-vector-icons/MaterialIcons";
 

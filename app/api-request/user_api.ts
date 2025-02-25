@@ -17,7 +17,7 @@ export const createUser = async (data: any) => {
 
         const response = await axios({
             method: 'post',
-            url: `${origin}/api/v1/userimage/`,
+            url: `${origin}/api/user/users`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -38,7 +38,7 @@ export const getUserById = async (id: string) => {
         const token = await getAuthToken();
         const response = await axios({
             method: 'get',
-            url: `${origin}/api/v1/user/${id}`,
+            url: `${origin}/api/user/users/${id}`,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
@@ -75,7 +75,7 @@ export const updateUserById = async (id: string, data: any) => {
         const token = await getAuthToken();
         const response = await axios({
             method: 'patch',
-            url: `${origin}/api/v1/user/${id}`,
+            url: `${origin}/api/user/users/${id}`,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
@@ -96,7 +96,7 @@ export const deleteUserById = async (id: number) => {
         const token = await getAuthToken();
         const response = await axios({
             method: 'delete',
-            url: `${origin}/api/v1/user/${id}`,
+            url: `${origin}/api/user/users/${id}`,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
@@ -114,7 +114,7 @@ export const updateUserActiveStatus = async (id: number, active: boolean) => {
         const token = await getAuthToken();
         const response = await axios({
             method: 'patch',
-            url: `${origin}/api/v1/user/${id}/active`,
+            url: `${origin}/api/user/users/${id}/active`,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`

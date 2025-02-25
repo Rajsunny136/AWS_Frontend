@@ -8,7 +8,7 @@ export const sendUserOTP = async (data: any) => {
     const newData = JSON.stringify(data);
 
     try {
-        const response = await axios.post(`${origin}/api/v1/otp/send-otp`, newData, {
+        const response = await axios.post(`${origin}/api/user/send-otp`, newData, {
             headers: { "Content-Type": "application/json" },
         });
 
@@ -38,7 +38,7 @@ export const sendUserOTP = async (data: any) => {
 export const verifyUserOTP = async (data: { phone: string; otp: string; orderId: string }) => {
     try {
          
-      const response = await axios.post(`${origin}/api/v1/otp/verify-otp`, data, {
+      const response = await axios.post(`${origin}/api/user/verify-otp`, data, {
         headers: {
           "Content-Type": "application/json",
         
@@ -63,7 +63,7 @@ export const getUserDetails = async (phone: string, token: string) => {
         }
         const response = await axios({
             method: 'get',
-            url: `${origin}/api/v1/user/user-details`,
+            url: `${origin}/api/user/users`,
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
